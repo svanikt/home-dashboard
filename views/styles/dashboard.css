@@ -64,11 +64,17 @@ body.new-layout {
 /* Current Temp Display */
 .weather-temp-display {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 16px;
   padding: 12px 0;
+}
+
+.weather-icon-big {
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1;
+  color: #000;
 }
 
 .temp-huge {
@@ -77,11 +83,13 @@ body.new-layout {
   line-height: 1;
 }
 
-.weather-icon-text {
-  font-size: 16px;
+.temp-range-inline {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 1px;
-  color: #333;
+  color: #666;
+  line-height: 1.4;
 }
 
 /* Weather Meta (Feels Like & Precipitation) */
@@ -115,25 +123,6 @@ body.new-layout {
   padding: 10px 12px;
   background: #F8F8F8;
   border-radius: 8px;
-}
-
-/* Temp Range Display */
-.temp-range-display {
-  font-size: 15px;
-  font-weight: 600;
-  text-align: center;
-  color: #333;
-  padding: 8px 0;
-}
-
-.temp-low-label,
-.temp-high-label {
-  color: #333;
-}
-
-.temp-divider {
-  color: #999;
-  margin: 0 10px;
 }
 
 /* Wardrobe Box - New Black Design */
