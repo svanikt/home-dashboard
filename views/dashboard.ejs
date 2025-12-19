@@ -54,17 +54,17 @@
       <%
         const getWeatherIcon = (icon) => {
           const iconMap = {
-            'clear-day': '●',
-            'clear-night': '○',
-            'partly-cloudy-day': '◐',
-            'partly-cloudy-night': '◑',
-            'cloudy': '●',
-            'rain': '▼',
-            'snow': '❄',
-            'wind': '◯',
-            'fog': '≋'
+            'clear-day': 'ph-sun',
+            'clear-night': 'ph-moon',
+            'partly-cloudy-day': 'ph-cloud-sun',
+            'partly-cloudy-night': 'ph-cloud-moon',
+            'cloudy': 'ph-cloud',
+            'rain': 'ph-cloud-rain',
+            'snow': 'ph-snowflake',
+            'wind': 'ph-wind',
+            'fog': 'ph-cloud-fog'
           };
-          return iconMap[icon] || '●';
+          return iconMap[icon] || 'ph-sun';
         };
 
         const mainLocation = locations[0] || {};
@@ -78,12 +78,11 @@
 
       <!-- Current Temp with Icon and Low/High -->
       <div class="weather-temp-display">
-        <div class="weather-icon-big"><%= getWeatherIcon(mainLocation.weather_icon) %></div>
-        <div class="temp-huge"><%= Math.round(current_temp_c) %>°</div>
-        <div class="temp-range-inline">
-          <div>Low <%= Math.round(mainLocation.low_c) %>°</div>
-          <div>High <%= Math.round(mainLocation.high_c) %>°</div>
+        <div class="icon-and-range">
+          <i class="ph-bold <%= getWeatherIcon(mainLocation.weather_icon) %> weather-icon-big"></i>
+          <div class="temp-range-inline"><%= Math.round(mainLocation.low_c) %>° / <%= Math.round(mainLocation.high_c) %>°</div>
         </div>
+        <div class="temp-huge"><%= Math.round(current_temp_c) %>°</div>
       </div>
 
       <!-- Feels Like & Precipitation -->

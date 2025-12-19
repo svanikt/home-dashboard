@@ -66,13 +66,19 @@ body.new-layout {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 20px;
   padding: 12px 0;
 }
 
+.icon-and-range {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
 .weather-icon-big {
-  font-size: 56px;
-  font-weight: 900;
+  font-size: 52px;
   line-height: 1;
   color: #000;
 }
@@ -84,12 +90,11 @@ body.new-layout {
 }
 
 .temp-range-inline {
-  display: flex;
-  flex-direction: column;
   font-size: 13px;
   font-weight: 600;
   color: #666;
-  line-height: 1.4;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 /* Weather Meta (Feels Like & Precipitation) */
