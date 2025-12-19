@@ -7,3 +7,5 @@ node_modules
 !/views/styles/fonts/.gitkeep
 /views/assets/vehicle-logo/*
 !/views/assets/vehicle-logo/.gitkeep
+# Arduino config with WiFi credentials
+arduino/epaper-client/epaper-client.ino
