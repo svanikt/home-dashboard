@@ -134,6 +134,8 @@ class WeatherService extends BaseService {
           wind_mph: current.windspeed,
           wind_dir: current.winddir,
           condition: current.conditions,
+          description: today?.description || current.conditions || 'Clear skies',
+          icon: today?.icon || current.icon || 'clear-day',
           pm2_5: current.pm2p5, // PM2.5 particulate matter
           aqi: current.aqius, // US EPA Air Quality Index
         },
@@ -173,7 +175,9 @@ class WeatherService extends BaseService {
       // Use current actual conditions, not forecast
       const { icon } = mapIconAndDescription(loc.current.condition || '');
       const condition = loc.current.condition || 'Clear';
-      
+      const description = loc.current.description || condition;
+      const weatherIcon = loc.current.icon || 'clear-day';
+
       const high_f = Number(today?.high_f || 0);
       const low_f = Number(today?.low_f || 0);
 
@@ -189,6 +193,8 @@ class WeatherService extends BaseService {
         low_c: Math.round(toCelsius(low_f)),
         icon,
         condition,
+        description,
+        weather_icon: weatherIcon,
         rain_chance: Number(today?.rain_chance || 0),
         // Current conditions data (used as fallback if Ambient Weather unavailable)
         humidity: Math.round(Number(loc.current.humidity || 0)),

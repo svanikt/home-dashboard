@@ -78,6 +78,69 @@ body.new-layout {
   color: #666;
 }
 
+/* Weather Header Blob */
+.weather-header-blob {
+  background: #F8F8F8;
+  border: 2px solid #000;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.weather-location-today {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.weather-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.weather-icon-large {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.weather-temps {
+  flex: 1;
+}
+
+.temp-high-low {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.temp-high {
+  color: #000;
+}
+
+.temp-slash {
+  color: #999;
+  margin: 0 4px;
+}
+
+.temp-low {
+  color: #666;
+}
+
+.rain-chance {
+  font-size: 14px;
+  color: #666;
+}
+
+.weather-overview {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #333;
+  padding-top: 12px;
+  border-top: 1px solid #DDD;
+}
+
 .weather-details {
   display: flex;
   flex-direction: column;

@@ -55,26 +55,53 @@
 
     <!-- Weather Section (Left) -->
     <div class="weather-section">
+      <%
+        const getWeatherIcon = (icon) => {
+          const iconMap = {
+            'clear-day': '☀️',
+            'clear-night': '🌙',
+            'partly-cloudy-day': '⛅',
+            'partly-cloudy-night': '☁️',
+            'cloudy': '☁️',
+            'rain': '🌧️',
+            'snow': '❄️',
+            'wind': '💨',
+            'fog': '🌫️'
+          };
+          return iconMap[icon] || '☀️';
+        };
+
+        const mainLocation = locations[0] || {};
+        const locationName = mainLocation.name || 'LOCATION';
+      %>
+
+      <!-- Weather Header Blob -->
+      <div class="weather-header-blob">
+        <div class="weather-location-today"><%= locationName.toUpperCase() %> TODAY</div>
+        <div class="weather-icon-row">
+          <div class="weather-icon-large"><%= getWeatherIcon(mainLocation.weather_icon) %></div>
+          <div class="weather-temps">
+            <div class="temp-high-low">
+              <span class="temp-high"><%= Math.round(mainLocation.high_c) %>°</span>
+              <span class="temp-slash">/</span>
+              <span class="temp-low"><%= Math.round(mainLocation.low_c) %>°</span>
+            </div>
+            <% if (mainLocation.rain_chance > 0) { %>
+            <div class="rain-chance">💧 <%= mainLocation.rain_chance %>% chance of rain</div>
+            <% } %>
+          </div>
+        </div>
+        <% if (mainLocation.description) { %>
+        <div class="weather-overview">
+          <%= mainLocation.description %>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Current Temp -->
       <div class="weather-current">
         <div class="temp-large"><%= Math.round(current_temp_c) %>°</div>
         <div class="temp-label">Feels like <%= Math.round(feels_like_c) %>°</div>
-      </div>
-
-      <div class="weather-details">
-        <div class="weather-row">
-          <span class="label">High</span>
-          <span class="value"><%= Math.round(locations[0]?.high_c || 0) %>°</span>
-        </div>
-        <div class="weather-row">
-          <span class="label">Low</span>
-          <span class="value"><%= Math.round(locations[0]?.low_c || 0) %>°</span>
-        </div>
-        <% if (precipitation?.rain_chance > 0) { %>
-        <div class="weather-row">
-          <span class="label">Rain</span>
-          <span class="value"><%= precipitation.rain_chance %>%</span>
-        </div>
-        <% } %>
       </div>
 
       <% if (wardrobe) { %>
