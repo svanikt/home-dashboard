@@ -87,9 +87,10 @@
 
       <!-- Feels Like & Precipitation -->
       <div class="weather-meta">
-        <div class="feels-like">Feels like <%= Math.round(feels_like_c) %>°</div>
+        <span class="feels-like">Feels like <%= Math.round(feels_like_c) %>°</span>
         <% if (precipChance > 0) { %>
-        <div class="precip-info">💧 <%= precipChance %>%</div>
+        <span class="meta-divider">|</span>
+        <span class="precip-info"><i class="ph-bold ph-drop"></i> <%= precipChance %>%</span>
         <% } %>
       </div>
 

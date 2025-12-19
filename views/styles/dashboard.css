@@ -100,9 +100,9 @@ body.new-layout {
 /* Weather Meta (Feels Like & Precipitation) */
 .weather-meta {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 0;
   text-align: center;
   font-size: 14px;
   color: #666;
@@ -114,9 +114,17 @@ body.new-layout {
   font-size: 14px;
 }
 
+.meta-divider {
+  margin: 0 8px;
+  color: #CCC;
+}
+
 .precip-info {
-  font-size: 13px;
+  font-size: 14px;
   color: #555;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* Weather Description */
