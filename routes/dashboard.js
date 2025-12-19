@@ -73,20 +73,33 @@ router.get('/dashboard/image', async (req, res) => {
       ? `${baseUrl}/dashboard?battery=${encodeURIComponent(batteryParam)}`
       : `${baseUrl}/dashboard`;
     
-    // Check for system Chrome
-    const systemChromePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-    const useSystemChrome = fs.existsSync(systemChromePath);
-    
+    // Check for system Chrome/Chromium on different platforms
+    const chromePaths = [
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', // macOS
+      '/usr/bin/chromium-browser', // Ubuntu/Debian
+      '/usr/bin/chromium', // Some Linux distros
+      '/usr/bin/google-chrome', // Google Chrome on Linux
+    ];
+
+    let executablePath;
+    for (const path of chromePaths) {
+      if (fs.existsSync(path)) {
+        executablePath = path;
+        break;
+      }
+    }
+
     browser = await puppeteer.launch({
       headless: true,
-      pipe: true,
       timeout: 60000,
-      executablePath: useSystemChrome ? systemChromePath : undefined,
+      executablePath: executablePath,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu',
+        '--disable-software-rasterizer',
+        '--disable-features=VizDisplayCompositor',
         '--font-render-hinting=none',
         '--force-color-profile=srgb'
       ]
