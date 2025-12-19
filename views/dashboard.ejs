@@ -199,6 +199,12 @@
     </div>
   </div>
 
+  <% if (message && message.text) { %>
+  <div class="message-board">
+    <div class="message-text"><%= message.text %></div>
+  </div>
+  <% } %>
+
   <div class="header">
     <div class="current-conditions">
       <div class="main-weather-icon">
