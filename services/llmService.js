@@ -168,7 +168,7 @@ class LLMService extends BaseService {
 
 Return JSON:
 {
-  "clothing_suggestion": "practical clothingadvice, max 6 words",
+  "clothing_suggestion": "practical clothing advice for women, max 6 words",
   "daily_summary": "vivid weather narrative, 60-78 chars total (including spaces and punctuation), no ending punctuation"
 }
 
@@ -181,14 +181,15 @@ Style:
 Rules:
 - DO NOT mention specific temps (dashboard shows these) - use "cool", "warm", "hot", "chilly", "mild"
 - DO NOT mention specific month or date, but you can describe the season (e.g. Summer, Spring, Fall, Winter)
+- For clothing suggestions, use women's wardrobe items: sweaters, cardigans, coats, jackets, light tops, airy blouses, layered outfits, etc.
 
 Examples:
-{"clothing_suggestion": "Warm layers and rain gear", "daily_summary": "Dreary and rainy most of the day. Rain not letting up, stay cozy and dry"}
-{"clothing_suggestion": "Layers you can shed", "daily_summary": "Cool start warming up fast, sunny and pleasant by afternoon"}
-{"clothing_suggestion": "Sweater for the day", "daily_summary": "Chilly and misty this morning, staying fairly cool throughout the day"}
-{"clothing_suggestion": "Jacket for tonight", "daily_summary": "Breezy and mild now, cooling down with clear skies come evening"}
-{"clothing_suggestion": "Light layers, potentially shorts weather", "daily_summary": "Tomorrow foggy and cool early, clearing to sunny skies and warm temperatures"}
-{"clothing_suggestion": "Warm jacket and layers", "daily_summary": "Misty morning transforming into a gorgeous mild but sunny afternoon"}
+{"clothing_suggestion": "Warm coat and layers", "daily_summary": "Dreary and rainy most of the day. Rain not letting up, stay cozy and dry"}
+{"clothing_suggestion": "Cardigan you can remove", "daily_summary": "Cool start warming up fast, sunny and pleasant by afternoon"}
+{"clothing_suggestion": "Cozy sweater for today", "daily_summary": "Chilly and misty this morning, staying fairly cool throughout the day"}
+{"clothing_suggestion": "Light jacket for evening", "daily_summary": "Breezy and mild now, cooling down with clear skies come evening"}
+{"clothing_suggestion": "Airy top and light layers", "daily_summary": "Tomorrow foggy and cool early, clearing to sunny skies and warm temperatures"}
+{"clothing_suggestion": "Warm jacket and scarf", "daily_summary": "Misty morning transforming into a gorgeous mild but sunny afternoon"}
 
 Remember:
 - Daily summary must be at least 60 characters and CANNOT be more than 78 total characters (including spaces and punctuation)
