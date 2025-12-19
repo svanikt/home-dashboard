@@ -9,3 +9,4 @@ node_modules
 !/views/assets/vehicle-logo/.gitkeep
 # Arduino config with WiFi credentials
 arduino/epaper-client/epaper-client.ino
+arduino/epaper-client/driver.h
