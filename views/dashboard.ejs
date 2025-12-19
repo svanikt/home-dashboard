@@ -20,12 +20,21 @@
   <%
     const formatDate = (date) => {
       const d = new Date(date);
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
       const dayName = days[d.getDay()];
       const month = months[d.getMonth()];
       const day = d.getDate();
-      return `${dayName}, ${month} ${day}`;
+      const year = d.getFullYear();
+
+      // Add ordinal suffix (st, nd, rd, th)
+      const getOrdinal = (n) => {
+        const s = ['th', 'st', 'nd', 'rd'];
+        const v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+      };
+
+      return `${dayName} ${month} ${getOrdinal(day)}, ${year}`;
     };
 
   %>
@@ -36,11 +45,6 @@
     <%= message.text %>
   </div>
   <% } %>
-
-  <!-- Date Header -->
-  <div class="date-header">
-    <%= formatDate(date) %>
-  </div>
 
   <!-- Main Content: Weather Left, Calendar Right -->
   <div class="main-grid">
@@ -64,44 +68,48 @@
         };
 
         const mainLocation = locations[0] || {};
-        const locationName = mainLocation.name || 'LOCATION';
       %>
 
-      <!-- Weather Header Blob -->
-      <div class="weather-header-blob">
-        <div class="weather-location-today"><%= locationName.toUpperCase() %> TODAY</div>
-        <div class="weather-icon-row">
-          <div class="weather-icon-large"><%= getWeatherIcon(mainLocation.weather_icon) %></div>
-          <div class="weather-temps">
-            <div class="temp-high-low">
-              <span class="temp-high"><%= Math.round(mainLocation.high_c) %>°</span>
-              <span class="temp-slash">/</span>
-              <span class="temp-low"><%= Math.round(mainLocation.low_c) %>°</span>
-            </div>
-            <% if (mainLocation.rain_chance > 0) { %>
-            <div class="rain-chance">💧 <%= mainLocation.rain_chance %>% chance of rain</div>
-            <% } %>
-          </div>
+      <!-- Date Header -->
+      <div class="weather-date-header">
+        <%= formatDate(date) %>
+      </div>
+
+      <!-- Current Temp with Icon -->
+      <div class="weather-temp-display">
+        <div class="weather-icon-big"><%= getWeatherIcon(mainLocation.weather_icon) %></div>
+        <div class="temp-huge"><%= Math.round(current_temp_c) %>°</div>
+      </div>
+
+      <!-- Feels Like & Sun Info -->
+      <div class="weather-meta">
+        <div class="feels-like">Feels like <%= Math.round(feels_like_c) %>°</div>
+        <div class="sun-times">
+          ☀️ ↑ <%= sun?.sunrise || '' %>  ↓ <%= sun?.sunset || '' %>
         </div>
-        <% if (mainLocation.description) { %>
-        <div class="weather-overview">
-          <%= mainLocation.description %>
+      </div>
+
+      <!-- Weather Description -->
+      <% if (mainLocation.description) { %>
+      <div class="weather-description">
+        <%= mainLocation.description %>
+      </div>
+      <% } %>
+
+      <!-- Low/High + Wardrobe Box -->
+      <div class="wardrobe-box-new">
+        <div class="temp-range">
+          <span class="temp-low-label">Low <%= Math.round(mainLocation.low_c) %>°</span>
+          <span class="temp-divider">|</span>
+          <span class="temp-high-label">High <%= Math.round(mainLocation.high_c) %>°</span>
+        </div>
+        <% if (wardrobe) { %>
+        <div class="wardrobe-content">
+          <div class="wardrobe-icon">👔</div>
+          <div class="wardrobe-text-new"><%= wardrobe %></div>
         </div>
         <% } %>
       </div>
-
-      <!-- Current Temp -->
-      <div class="weather-current">
-        <div class="temp-large"><%= Math.round(current_temp_c) %>°</div>
-        <div class="temp-label">Feels like <%= Math.round(feels_like_c) %>°</div>
-      </div>
-
-      <% if (wardrobe) { %>
-      <div class="wardrobe-box">
-        <div class="wardrobe-label">What to wear</div>
-        <div class="wardrobe-text"><%= wardrobe %></div>
-      </div>
-      <% } %>
     </div>
 
     <!-- Calendar Section (Right) -->
