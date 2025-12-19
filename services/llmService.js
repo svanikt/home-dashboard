@@ -110,35 +110,43 @@ class LLMService extends BaseService {
     // Combine system and user prompts for Gemini
     const fullPrompt = `${systemPrompt}\n\n${userMessage}`;
 
-    const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        contents: [{
-          parts: [{
-            text: fullPrompt
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.5,
-          maxOutputTokens: 300,
-        }
-      },
-      {
-        timeout: 8000,
-        headers: {
-          'Content-Type': 'application/json',
+    try {
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
+        {
+          contents: [{
+            parts: [{
+              text: fullPrompt
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.5,
+            maxOutputTokens: 300,
+          }
         },
+        {
+          timeout: 8000,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const text = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const usage = response?.data?.usageMetadata || {};
+
+      return {
+        text,
+        inputTokens: usage.promptTokenCount || 0,
+        outputTokens: usage.candidatesTokenCount || 0,
+      };
+    } catch (error) {
+      logger.error?.(`[LLM Gemini] API Error: ${error.message}`);
+      if (error.response) {
+        logger.error?.(`[LLM Gemini] Status: ${error.response.status}, Data:`, error.response.data);
       }
-    );
-
-    const text = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const usage = response?.data?.usageMetadata || {};
-
-    return {
-      text,
-      inputTokens: usage.promptTokenCount || 0,
-      outputTokens: usage.candidatesTokenCount || 0,
-    };
+      throw error;
+    }
   }
 
   async callAnthropicAPI(systemPrompt, userMessage, logger) {
