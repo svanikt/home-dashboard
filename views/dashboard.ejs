@@ -84,10 +84,9 @@
 
       <!-- Feels Like & Precipitation -->
       <div class="weather-meta">
-        <span class="feels-like">Feels like <%= Math.round(feels_like_c) %>°</span>
+        <div class="feels-like">Feels like <%= Math.round(feels_like_c) %>°</div>
         <% if (precipChance > 0) { %>
-        <span class="meta-divider">|</span>
-        <span class="precip-info"><%= precipChance %>% chance of rain</span>
+        <div class="precip-info">💧 <%= precipChance %>%</div>
         <% } %>
       </div>
 
@@ -98,20 +97,22 @@
       </div>
       <% } %>
 
-      <!-- Low/High + Wardrobe Box -->
+      <!-- Low/High Temps -->
+      <div class="temp-range-display">
+        <span class="temp-low-label">Low <%= Math.round(mainLocation.low_c) %>°</span>
+        <span class="temp-divider">|</span>
+        <span class="temp-high-label">High <%= Math.round(mainLocation.high_c) %>°</span>
+      </div>
+
+      <!-- Wardrobe Box -->
+      <% if (wardrobe) { %>
       <div class="wardrobe-box-new">
-        <div class="temp-range">
-          <span class="temp-low-label">Low <%= Math.round(mainLocation.low_c) %>°</span>
-          <span class="temp-divider">|</span>
-          <span class="temp-high-label">High <%= Math.round(mainLocation.high_c) %>°</span>
-        </div>
-        <% if (wardrobe) { %>
         <div class="wardrobe-content">
-          <div class="wardrobe-icon">👔</div>
+          <div class="wardrobe-icon">🧥</div>
           <div class="wardrobe-text-new"><%= wardrobe %></div>
         </div>
-        <% } %>
       </div>
+      <% } %>
     </div>
 
     <!-- Calendar Section (Right) -->
