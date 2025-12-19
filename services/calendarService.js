@@ -79,26 +79,30 @@ class CalendarService extends BaseService {
     // Read selected calendars from auth.json
     const authData = this.loadTokens();
     const calendarIds = authData.google?.selectedCalendars || [];
-    const timezone = config.timezone || 'America/Los_Angeles';
+    const timezone = config.timezone || 'America/New_York';
 
     if (calendarIds.length === 0) {
       throw new Error('No calendars selected');
     }
-    
+
     const calendar = google.calendar({ version: 'v3', auth: authClient });
 
     const now = new Date();
     const timeMin = now.toISOString();
-    const timeMax = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    // Fetch events through end of tomorrow
+    const endOfTomorrow = new Date(now);
+    endOfTomorrow.setDate(endOfTomorrow.getDate() + 2);
+    endOfTomorrow.setHours(0, 0, 0, 0);
+    const timeMax = endOfTomorrow.toISOString();
 
-    const events = [];
+    const allEvents = [];
     for (const calId of calendarIds) {
       try {
         const res = await calendar.events.list({
           calendarId: calId,
           timeMin,
           timeMax,
-          maxResults: 10,
+          maxResults: 50,
           singleEvents: true,
           orderBy: 'startTime',
           timeZone: timezone,
@@ -108,19 +112,19 @@ class CalendarService extends BaseService {
         for (const ev of items) {
           // Skip all-day events
           if (ev.start && ev.start.date && !ev.start.dateTime) continue;
-          
-          const start = ev.start.dateTime || ev.start.date;
-          const startDate = new Date(start);
-          
-          // Only include events within next 7 days
-          const diffMs = startDate - now;
-          const days = diffMs / (1000 * 60 * 60 * 24);
-          if (days < 0 || days > 7) continue;
 
-          events.push({
+          const start = ev.start.dateTime || ev.start.date;
+          const end = ev.end?.dateTime || ev.end?.date;
+          const startDate = new Date(start);
+          const endDate = end ? new Date(end) : null;
+
+          allEvents.push({
             title: ev.summary || 'Untitled',
             start,
+            end,
             startDate,
+            endDate,
+            location: ev.location || null,
           });
         }
       } catch (e) {
@@ -128,18 +132,97 @@ class CalendarService extends BaseService {
       }
     }
 
-    events.sort((a, b) => a.startDate - b.startDate);
-    return { events: events.slice(0, 2), timezone };
+    allEvents.sort((a, b) => a.startDate - b.startDate);
+
+    // Time-adaptive filtering
+    const cutoverHour = parseInt(process.env.CALENDAR_DISPLAY_HOUR_CUTOVER || '20', 10);
+    const filteredEvents = this.filterEventsTimeAdaptive(allEvents, now, timezone, cutoverHour);
+
+    return { events: filteredEvents, timezone, cutoverHour };
+  }
+
+  /**
+   * Filter events based on time-adaptive logic
+   * - Always show remaining events from today
+   * - Before cutover hour: show top 3 tomorrow events
+   * - After cutover hour: show ALL tomorrow events
+   */
+  filterEventsTimeAdaptive(allEvents, now, timezone, cutoverHour) {
+    // Get current hour in the target timezone
+    const currentHourInTz = parseInt(now.toLocaleString('en-US', {
+      hour: 'numeric',
+      hour12: false,
+      timeZone: timezone
+    }), 10);
+
+    // Determine date boundaries in target timezone
+    const todayStr = now.toLocaleDateString('en-US', { timeZone: timezone });
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toLocaleDateString('en-US', { timeZone: timezone });
+
+    const todayEvents = [];
+    const tomorrowEvents = [];
+
+    for (const ev of allEvents) {
+      const eventDateStr = ev.startDate.toLocaleDateString('en-US', { timeZone: timezone });
+      const eventEnded = ev.endDate ? now >= ev.endDate : false;
+
+      if (eventDateStr === todayStr && !eventEnded) {
+        todayEvents.push(ev);
+      } else if (eventDateStr === tomorrowStr) {
+        tomorrowEvents.push(ev);
+      }
+    }
+
+    // Apply smart prioritization
+    let result = [...todayEvents];
+
+    if (currentHourInTz >= cutoverHour) {
+      // After cutover: show ALL tomorrow events
+      result = result.concat(tomorrowEvents);
+    } else {
+      // Before cutover: show top 3 tomorrow events
+      result = result.concat(tomorrowEvents.slice(0, 3));
+    }
+
+    return result;
   }
 
   mapToDashboard(apiData, config) {
     const now = new Date();
-    const timezone = apiData.timezone || 'America/Los_Angeles';
+    const timezone = apiData.timezone || 'America/New_York';
 
-    return apiData.events.map(ev => ({
-      title: ev.title,
-      time: this.formatRelativeTime(ev.start, now, timezone),
-    }));
+    const todayStr = now.toLocaleDateString('en-US', { timeZone: timezone });
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toLocaleDateString('en-US', { timeZone: timezone });
+
+    return apiData.events.map(ev => {
+      const eventDateStr = ev.startDate.toLocaleDateString('en-US', { timeZone: timezone });
+      const isToday = eventDateStr === todayStr;
+      const isTomorrow = eventDateStr === tomorrowStr;
+
+      const timeStr = ev.startDate.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        timeZone: timezone
+      }).toLowerCase();
+
+      let dayLabel = '';
+      if (isToday) {
+        dayLabel = 'TODAY';
+      } else if (isTomorrow) {
+        dayLabel = 'TOMORROW';
+      }
+
+      return {
+        title: ev.title,
+        time: timeStr,
+        dayLabel,
+        location: ev.location,
+      };
+    });
   }
 
   formatRelativeTime(dateStr, now, tz) {
