@@ -135,7 +135,8 @@ body.new-layout {
   text-align: center;
   padding: 10px 12px;
   background: #F8F8F8;
-  border-radius: 8px;
+  border-radius: 16px;
+  border: 2px solid #000;
 }
 
 /* Wardrobe Box - New Black Design */

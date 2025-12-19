@@ -182,9 +182,13 @@ Rules:
 - DO NOT mention specific temps (dashboard shows these) - use "cool", "warm", "hot", "chilly", "mild"
 - DO NOT mention specific month or date, but you can describe the season (e.g. Summer, Spring, Fall, Winter)
 - For clothing suggestions, use women's wardrobe items: sweaters, cardigans, coats, jackets, light tops, airy blouses, layered outfits, etc.
+- CRITICAL: When rain chance is >30% or it's actively raining, ALWAYS mention rain gear: raincoat, umbrella, waterproof jacket, rain boots, etc.
+- Prioritize rain protection over temperature comfort when precipitation is significant
 
 Examples:
-{"clothing_suggestion": "Warm coat and layers", "daily_summary": "Dreary and rainy most of the day. Rain not letting up, stay cozy and dry"}
+{"clothing_suggestion": "Raincoat and umbrella", "daily_summary": "Rainy throughout the day. Keep dry with waterproof layers"}
+{"clothing_suggestion": "Waterproof jacket, boots", "daily_summary": "Wet and dreary morning, rain continuing into afternoon. Stay dry"}
+{"clothing_suggestion": "Umbrella and warm coat", "daily_summary": "Cold and rainy most of the day. Bundle up and bring rain protection"}
 {"clothing_suggestion": "Cardigan you can remove", "daily_summary": "Cool start warming up fast, sunny and pleasant by afternoon"}
 {"clothing_suggestion": "Cozy sweater for today", "daily_summary": "Chilly and misty this morning, staying fairly cool throughout the day"}
 {"clothing_suggestion": "Light jacket for evening", "daily_summary": "Breezy and mild now, cooling down with clear skies come evening"}
