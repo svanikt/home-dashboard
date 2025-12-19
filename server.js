@@ -6,6 +6,7 @@ const { applyMiddleware } = require('./lib/middleware');
 const { isAuthed } = require('./services/calendarService');
 const adminRoutes = require('./routes/admin');
 const dashboardRoutes = require('./routes/dashboard');
+const messageRoutes = require('./routes/message');
 
 const app = express();
 const PORT = process.env.PORT || 7272;
@@ -40,6 +41,7 @@ applyMiddleware(app);
 // Mount route modules
 app.use('/', adminRoutes);
 app.use('/', dashboardRoutes);
+app.use('/api/message', messageRoutes);
 
 // 404 handler
 app.use((req, res) => {
