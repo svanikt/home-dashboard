@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { BaseService } = require('../lib/BaseService');
-const { mapIconAndDescription } = require('../lib/weatherUtils');
+const { mapIconAndDescription, toCelsius } = require('../lib/weatherUtils');
 const zipcodes = require('zipcodes');
 
 /**
@@ -174,14 +174,19 @@ class WeatherService extends BaseService {
       const { icon } = mapIconAndDescription(loc.current.condition || '');
       const condition = loc.current.condition || 'Clear';
       
+      const high_f = Number(today?.high_f || 0);
+      const low_f = Number(today?.low_f || 0);
+
       return {
         name: loc.location.name,
         region: loc.location.region,
         country: loc.location.country,
         zip_code: loc.zip,
-        current_temp: Math.round(Number(loc.current.temp_f || 0)),
-        high: Math.round(Number(today?.high_f || 0)),
-        low: Math.round(Number(today?.low_f || 0)),
+        current_temp: Math.round(high_f),
+        high: Math.round(high_f),
+        low: Math.round(low_f),
+        high_c: Math.round(toCelsius(high_f)),
+        low_c: Math.round(toCelsius(low_f)),
         icon,
         condition,
         rain_chance: Number(today?.rain_chance || 0),
