@@ -3,7 +3,8 @@ const { BaseService } = require('../lib/BaseService');
 
 /**
  * LLM Service (AI Insights) - OPTIONAL
- * Currently supports Anthropic Claude, but designed to be provider-agnostic
+ * Supports Google Gemini (free tier) and Anthropic Claude
+ * Provider auto-detected based on which API key is set
  */
 class LLMService extends BaseService {
 
@@ -18,54 +19,56 @@ class LLMService extends BaseService {
   }
 
   isEnabled() {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    return !!apiKey;
+    const geminiKey = process.env.GEMINI_API_KEY;
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
+    return !!(geminiKey || anthropicKey);
   }
 
-  // This uses the Anthropic Claude API, but can be swapped out
-  // for any other LLM provider by re-implementing fetchData()
-  // and updating the pricing constants below
+  getProvider() {
+    if (process.env.GEMINI_API_KEY) return 'gemini';
+    if (process.env.ANTHROPIC_API_KEY) return 'anthropic';
+    return null;
+  }
 
-  // Claude 3.5 Haiku pricing per token
-  static PRICE_INPUT_PER_TOKEN = 0.80 / 1_000_000;   // $0.80 per million
-  static PRICE_OUTPUT_PER_TOKEN = 4.00 / 1_000_000;  // $4.00 per million
+  // Pricing per token (Gemini free tier = $0, Claude 3.5 Haiku = paid)
+  static PRICING = {
+    gemini: {
+      input: 0,   // Free tier
+      output: 0,  // Free tier
+    },
+    anthropic: {
+      input: 0.80 / 1_000_000,   // $0.80 per million
+      output: 4.00 / 1_000_000,  // $4.00 per million
+    }
+  };
   
   async fetchData(config, logger) {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
+    const provider = this.getProvider();
+    if (!provider) throw new Error('No LLM API key configured (GEMINI_API_KEY or ANTHROPIC_API_KEY)');
 
     const { systemPrompt, userMessage } = this.buildPrompt(config.input);
-    
-    logger.info?.('[LLM] Calling Anthropic Claude API');
 
-    const response = await axios.post(
-      'https://api.anthropic.com/v1/messages',
-      {
-        model: 'claude-3-5-haiku-latest',
-        max_tokens: 300,
-        temperature: 0.5,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userMessage }],
-      },
-      {
-        timeout: 8000,
-        headers: {
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
-        },
-      }
-    );
+    logger.info?.(`[LLM] Calling ${provider} API`);
 
-    const text = response?.data?.content?.[0]?.text || '';
+    let response, text, inputTokens, outputTokens;
+
+    if (provider === 'gemini') {
+      response = await this.callGeminiAPI(systemPrompt, userMessage, logger);
+      text = response.text;
+      inputTokens = response.inputTokens;
+      outputTokens = response.outputTokens;
+    } else {
+      response = await this.callAnthropicAPI(systemPrompt, userMessage, logger);
+      text = response.text;
+      inputTokens = response.inputTokens;
+      outputTokens = response.outputTokens;
+    }
+
     logger.info?.('[LLM] Response:', text);
 
-    // Extract token usage and calculate cost
-    const usage = response?.data?.usage || {};
-    const inputTokens = usage.input_tokens || 0;
-    const outputTokens = usage.output_tokens || 0;
-    const costUsd = (inputTokens * LLMService.PRICE_INPUT_PER_TOKEN) + 
-                    (outputTokens * LLMService.PRICE_OUTPUT_PER_TOKEN);
+    // Calculate cost
+    const pricing = LLMService.PRICING[provider];
+    const costUsd = (inputTokens * pricing.input) + (outputTokens * pricing.output);
 
     logger.info?.(`[LLM] Tokens: ${inputTokens} input, ${outputTokens} output | Cost: $${costUsd.toFixed(6)}`);
 
@@ -98,6 +101,75 @@ class LLMService extends BaseService {
         cost_usd: costUsd,
         prompt: `SYSTEM:\n${systemPrompt}\n\nUSER:\n${userMessage}`,
       }
+    };
+  }
+
+  async callGeminiAPI(systemPrompt, userMessage, logger) {
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    // Combine system and user prompts for Gemini
+    const fullPrompt = `${systemPrompt}\n\n${userMessage}`;
+
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        contents: [{
+          parts: [{
+            text: fullPrompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.5,
+          maxOutputTokens: 300,
+        }
+      },
+      {
+        timeout: 8000,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    const text = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const usage = response?.data?.usageMetadata || {};
+
+    return {
+      text,
+      inputTokens: usage.promptTokenCount || 0,
+      outputTokens: usage.candidatesTokenCount || 0,
+    };
+  }
+
+  async callAnthropicAPI(systemPrompt, userMessage, logger) {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+
+    const response = await axios.post(
+      'https://api.anthropic.com/v1/messages',
+      {
+        model: 'claude-3-5-haiku-latest',
+        max_tokens: 300,
+        temperature: 0.5,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }],
+      },
+      {
+        timeout: 8000,
+        headers: {
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+      }
+    );
+
+    const text = response?.data?.content?.[0]?.text || '';
+    const usage = response?.data?.usage || {};
+
+    return {
+      text,
+      inputTokens: usage.input_tokens || 0,
+      outputTokens: usage.output_tokens || 0,
     };
   }
 
