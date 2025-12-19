@@ -130,7 +130,6 @@ async function main() {
 
       if (response.status === 200) {
         console.log('✓ Message sent successfully!');
-        console.log(`  Your girlfriend will see it on her dashboard`);
       } else {
         console.error('✗ Failed to send message:', response.data);
         process.exit(1);
