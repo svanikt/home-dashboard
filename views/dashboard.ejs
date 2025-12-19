@@ -54,20 +54,21 @@
       <%
         const getWeatherIcon = (icon) => {
           const iconMap = {
-            'clear-day': '☀️',
-            'clear-night': '🌙',
-            'partly-cloudy-day': '⛅',
-            'partly-cloudy-night': '☁️',
-            'cloudy': '☁️',
-            'rain': '🌧️',
-            'snow': '❄️',
-            'wind': '💨',
-            'fog': '🌫️'
+            'clear-day': 'SUNNY',
+            'clear-night': 'CLEAR',
+            'partly-cloudy-day': 'PARTLY CLOUDY',
+            'partly-cloudy-night': 'PARTLY CLOUDY',
+            'cloudy': 'CLOUDY',
+            'rain': 'RAINY',
+            'snow': 'SNOWY',
+            'wind': 'WINDY',
+            'fog': 'FOGGY'
           };
-          return iconMap[icon] || '☀️';
+          return iconMap[icon] || 'CLEAR';
         };
 
         const mainLocation = locations[0] || {};
+        const precipChance = mainLocation.rain_chance || 0;
       %>
 
       <!-- Date Header -->
@@ -77,16 +78,17 @@
 
       <!-- Current Temp with Icon -->
       <div class="weather-temp-display">
-        <div class="weather-icon-big"><%= getWeatherIcon(mainLocation.weather_icon) %></div>
         <div class="temp-huge"><%= Math.round(current_temp_c) %>°</div>
+        <div class="weather-icon-text"><%= getWeatherIcon(mainLocation.weather_icon) %></div>
       </div>
 
-      <!-- Feels Like & Sun Info -->
+      <!-- Feels Like & Precipitation -->
       <div class="weather-meta">
-        <div class="feels-like">Feels like <%= Math.round(feels_like_c) %>°</div>
-        <div class="sun-times">
-          ☀️ ↑ <%= sun?.sunrise || '' %>  ↓ <%= sun?.sunset || '' %>
-        </div>
+        <span class="feels-like">Feels like <%= Math.round(feels_like_c) %>°</span>
+        <% if (precipChance > 0) { %>
+        <span class="meta-divider">|</span>
+        <span class="precip-info"><%= precipChance %>% chance of rain</span>
+        <% } %>
       </div>
 
       <!-- Weather Description -->
