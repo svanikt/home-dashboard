@@ -31,7 +31,7 @@ body.new-layout {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 8px;
   font-size: 18px;
   font-weight: 500;
   line-height: 1.3;
@@ -43,7 +43,6 @@ body.new-layout {
 }
 
 .message-text {
-  flex: 1;
   text-align: center;
 }
 
@@ -63,14 +62,14 @@ body.new-layout {
   gap: 10px;
 }
 
-/* Weather Date Header - Black rounded rectangle */
+/* Weather Date Header - Outlined box */
 .weather-date-header {
-  background: #000;
-  color: #FFF;
+  color: #000;
   font-size: 18px;
   font-weight: 600;
   text-align: center;
   padding: 10px 20px;
+  border: 2px solid #000;
   border-radius: 8px;
 }
 
@@ -193,14 +192,14 @@ body.new-layout {
   padding-left: 32px;
 }
 
-/* Calendar Header - Black rounded rectangle (matches weather header) */
+/* Calendar Header - Outlined box (matches weather header) */
 .calendar-header {
-  background: #000;
-  color: #FFF;
+  color: #000;
   font-size: 18px;
   font-weight: 600;
   text-align: center;
   padding: 10px 20px;
+  border: 2px solid #000;
   border-radius: 8px;
   margin-bottom: 16px;
 }
