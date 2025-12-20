@@ -64,7 +64,7 @@ class LLMService extends BaseService {
       outputTokens = response.outputTokens;
     }
 
-    logger.info?.('[LLM] Response:', text);
+    logger.info?.(`[LLM] Raw response text (${text.length} chars):`, text);
 
     // Calculate cost
     const pricing = LLMService.PRICING[provider];
@@ -76,6 +76,7 @@ class LLMService extends BaseService {
     try {
       // Strip markdown code blocks just in case
       let cleanText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      logger.info?.('[LLM] After stripping markdown:', cleanText);
 
       // Extract just the JSON object (in case LLM adds extra commentary)
       const jsonStart = cleanText.indexOf('{');
@@ -83,11 +84,14 @@ class LLMService extends BaseService {
 
       if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
         cleanText = cleanText.substring(jsonStart, jsonEnd + 1);
+        logger.info?.('[LLM] Extracted JSON:', cleanText);
       }
-      
+
       parsed = JSON.parse(cleanText);
+      logger.info?.('[LLM] Successfully parsed:', parsed);
     } catch (e) {
       logger.error?.('[LLM] Failed to parse response:', e.message);
+      logger.error?.('[LLM] Text that failed to parse:', text);
       parsed = { clothing_suggestion: null, daily_summary: null };
     }
 
@@ -132,8 +136,14 @@ class LLMService extends BaseService {
         }
       );
 
+      // Log full response structure for debugging
+      logger.info?.('[LLM Gemini] Raw response structure:', JSON.stringify(response.data, null, 2));
+
       const text = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
       const usage = response?.data?.usageMetadata || {};
+
+      logger.info?.(`[LLM Gemini] Extracted text: "${text}"`);
+      logger.info?.(`[LLM Gemini] Usage:`, usage);
 
       return {
         text,
@@ -143,7 +153,7 @@ class LLMService extends BaseService {
     } catch (error) {
       logger.error?.(`[LLM Gemini] API Error: ${error.message}`);
       if (error.response) {
-        logger.error?.(`[LLM Gemini] Status: ${error.response.status}, Data:`, error.response.data);
+        logger.error?.(`[LLM Gemini] Status: ${error.response.status}, Data:`, JSON.stringify(error.response.data));
       }
       throw error;
     }
