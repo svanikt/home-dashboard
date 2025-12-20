@@ -125,7 +125,8 @@ class LLMService extends BaseService {
           }],
           generationConfig: {
             temperature: 0.5,
-            maxOutputTokens: 1000,
+            maxOutputTokens: 2048,
+            responseMimeType: "application/json",
           }
         },
         {
@@ -254,7 +255,7 @@ class LLMService extends BaseService {
       timeContext
     });
 
-    const systemPrompt = `You generate accurate and helpful weather insights for a kitchen e-ink display. The dashboard shows temps/numbers, so describe the FEEL and STORY of the weather to help the user plan their day.
+    const systemPrompt = `You generate accurate and helpful weather insights for a kitchen e-ink display. Be CONCISE and respond IMMEDIATELY without extended reasoning.
 
 Return JSON:
 {
@@ -288,6 +289,7 @@ Examples:
 Remember:
 - Daily summary must be at least 60 characters and CANNOT be more than 78 total characters (including spaces and punctuation)
 - You MUST return valid JSON ONLY
+- Respond IMMEDIATELY without extended reasoning or thinking - just generate the JSON directly
 `;
 
     const now = new Date();
