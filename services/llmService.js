@@ -125,11 +125,11 @@ class LLMService extends BaseService {
           }],
           generationConfig: {
             temperature: 0.5,
-            maxOutputTokens: 2000,
+            maxOutputTokens: 500,
           }
         },
         {
-          timeout: 8000,
+          timeout: 20000,
           headers: {
             'Content-Type': 'application/json',
           },
