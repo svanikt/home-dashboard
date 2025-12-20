@@ -126,7 +126,6 @@ class LLMService extends BaseService {
           generationConfig: {
             temperature: 0.5,
             maxOutputTokens: 2048,
-            responseMimeType: "application/json",
           }
         },
         {
