@@ -125,7 +125,7 @@ class LLMService extends BaseService {
           }],
           generationConfig: {
             temperature: 0.5,
-            maxOutputTokens: 300,
+            maxOutputTokens: 2000,
           }
         },
         {
