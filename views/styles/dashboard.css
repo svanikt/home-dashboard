@@ -24,12 +24,10 @@ body.new-layout {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Message Banner */
+/* Message Banner - Plain text style */
 .message-banner {
-  background: #000;
-  color: #FFF;
-  padding: 14px 20px;
-  border-radius: 8px;
+  color: #000;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,13 +63,15 @@ body.new-layout {
   gap: 10px;
 }
 
-/* Weather Date Header */
+/* Weather Date Header - Black rounded rectangle */
 .weather-date-header {
+  background: #000;
+  color: #FFF;
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #000;
+  padding: 10px 20px;
+  border-radius: 8px;
 }
 
 /* Current Temp Display */
@@ -193,9 +193,15 @@ body.new-layout {
   padding-left: 32px;
 }
 
+/* Calendar Header - Black rounded rectangle (matches weather header) */
 .calendar-header {
-  font-size: 20px;
+  background: #000;
+  color: #FFF;
+  font-size: 18px;
   font-weight: 600;
+  text-align: center;
+  padding: 10px 20px;
+  border-radius: 8px;
   margin-bottom: 16px;
 }
 

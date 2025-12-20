@@ -18,14 +18,14 @@
 </head>
 <body class="new-layout">
   <%
-    const formatDate = (date) => {
+    const formatDate = (date, tz) => {
       const d = new Date(date);
-      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
-      const dayName = days[d.getDay()];
-      const month = months[d.getMonth()];
-      const day = d.getDate();
-      const year = d.getFullYear();
+
+      // Use timezone-aware formatting
+      const dayName = d.toLocaleDateString('en-US', { weekday: 'short', timeZone: tz });
+      const month = d.toLocaleDateString('en-US', { month: 'short', timeZone: tz });
+      const day = parseInt(d.toLocaleDateString('en-US', { day: 'numeric', timeZone: tz }), 10);
+      const year = d.toLocaleDateString('en-US', { year: 'numeric', timeZone: tz });
 
       // Add ordinal suffix (st, nd, rd, th)
       const getOrdinal = (n) => {
@@ -74,7 +74,7 @@
 
       <!-- Date Header -->
       <div class="weather-date-header">
-        <%= formatDate(date) %>
+        <%= formatDate(date, timezone) %>
       </div>
 
       <!-- Current Temp with Icon and Low/High -->
