@@ -39,10 +39,11 @@
 
   %>
 
-  <!-- Message Board (if exists) -->
-  <% if (message && message.text) { %>
+  <!-- Message Board (always shown - either custom message or time-based greeting) -->
+  <% if (message) { %>
   <div class="message-banner">
-    <%= message.text %>
+    <i class="ph-bold <%= message.icon %> message-icon"></i>
+    <span class="message-text"><%= message.text %></span>
   </div>
   <% } %>
 
