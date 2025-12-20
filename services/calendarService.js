@@ -89,11 +89,11 @@ class CalendarService extends BaseService {
 
     const now = new Date();
     const timeMin = now.toISOString();
-    // Fetch events through end of tomorrow
-    const endOfTomorrow = new Date(now);
-    endOfTomorrow.setDate(endOfTomorrow.getDate() + 2);
-    endOfTomorrow.setHours(0, 0, 0, 0);
-    const timeMax = endOfTomorrow.toISOString();
+    // Fetch events for the next 7 days to have more events available
+    const endOfWeek = new Date(now);
+    endOfWeek.setDate(endOfWeek.getDate() + 7);
+    endOfWeek.setHours(23, 59, 59, 999);
+    const timeMax = endOfWeek.toISOString();
 
     const allEvents = [];
     for (const calId of calendarIds) {
@@ -142,10 +142,11 @@ class CalendarService extends BaseService {
   }
 
   /**
-   * Filter events based on time-adaptive logic
+   * Filter events based on time-adaptive logic with smart future event filling
    * - Always show remaining events from today
    * - Before cutover hour: show top 3 tomorrow events
    * - After cutover hour: show ALL tomorrow events
+   * - If tomorrow is sparse (< 3 events), fill with future events up to ~8 total
    */
   filterEventsTimeAdaptive(allEvents, now, timezone, cutoverHour) {
     // Get current hour in the target timezone
@@ -163,6 +164,7 @@ class CalendarService extends BaseService {
 
     const todayEvents = [];
     const tomorrowEvents = [];
+    const futureEvents = [];
 
     for (const ev of allEvents) {
       const eventDateStr = ev.startDate.toLocaleDateString('en-US', { timeZone: timezone });
@@ -172,18 +174,36 @@ class CalendarService extends BaseService {
         todayEvents.push(ev);
       } else if (eventDateStr === tomorrowStr) {
         tomorrowEvents.push(ev);
+      } else if (ev.startDate > tomorrow) {
+        futureEvents.push(ev);
       }
     }
 
     // Apply smart prioritization
     let result = [...todayEvents];
+    const maxTotalEvents = 8; // Target to show up to 8 events total
 
     if (currentHourInTz >= cutoverHour) {
       // After cutover: show ALL tomorrow events
       result = result.concat(tomorrowEvents);
+
+      // If we have room and tomorrow is sparse, add future events
+      const remainingSlots = maxTotalEvents - result.length;
+      if (remainingSlots > 0 && tomorrowEvents.length < 3) {
+        result = result.concat(futureEvents.slice(0, remainingSlots));
+      }
     } else {
       // Before cutover: show top 3 tomorrow events
-      result = result.concat(tomorrowEvents.slice(0, 3));
+      const tomorrowToShow = Math.min(3, tomorrowEvents.length);
+      result = result.concat(tomorrowEvents.slice(0, tomorrowToShow));
+
+      // If tomorrow has fewer than 3 events, fill with future events
+      if (tomorrowToShow < 3) {
+        const remainingSlots = maxTotalEvents - result.length;
+        if (remainingSlots > 0) {
+          result = result.concat(futureEvents.slice(0, remainingSlots));
+        }
+      }
     }
 
     return result;
@@ -214,6 +234,21 @@ class CalendarService extends BaseService {
         dayLabel = 'TODAY';
       } else if (isTomorrow) {
         dayLabel = 'TOMORROW';
+      } else {
+        // For future days, show day of week and date (e.g., "SUN DEC 22")
+        const dayOfWeek = ev.startDate.toLocaleDateString('en-US', {
+          weekday: 'short',
+          timeZone: timezone
+        }).toUpperCase();
+        const month = ev.startDate.toLocaleDateString('en-US', {
+          month: 'short',
+          timeZone: timezone
+        }).toUpperCase();
+        const day = ev.startDate.toLocaleDateString('en-US', {
+          day: 'numeric',
+          timeZone: timezone
+        });
+        dayLabel = `${dayOfWeek} ${month} ${day}`;
       }
 
       return {

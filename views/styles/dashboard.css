@@ -59,7 +59,7 @@ body.new-layout {
 .weather-section {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* Weather Date Header - Outlined box */
