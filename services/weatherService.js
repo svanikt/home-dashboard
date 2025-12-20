@@ -181,12 +181,15 @@ class WeatherService extends BaseService {
       const high_f = Number(today?.high_f || 0);
       const low_f = Number(today?.low_f || 0);
 
+      // Use actual current temperature, not daily high
+      const current_temp_f = Number(loc.current.temp_f || high_f);
+
       return {
         name: loc.location.name,
         region: loc.location.region,
         country: loc.location.country,
         zip_code: loc.zip,
-        current_temp: Math.round(high_f),
+        current_temp: Math.round(current_temp_f),
         high: Math.round(high_f),
         low: Math.round(low_f),
         high_c: Math.round(toCelsius(high_f)),
