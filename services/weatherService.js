@@ -8,7 +8,7 @@ const zipcodes = require('zipcodes');
  * This is the only required service - all others are optional
  */
 class WeatherService extends BaseService {
-  constructor(cacheTTLMinutes = 30) {
+  constructor(cacheTTLMinutes = 10) {
     super({
       name: 'Visual Crossing Weather',
       cacheKey: 'weather',
