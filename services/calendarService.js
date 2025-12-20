@@ -181,7 +181,7 @@ class CalendarService extends BaseService {
 
     // Apply smart prioritization
     let result = [...todayEvents];
-    const maxTotalEvents = 5; // Limit to 5 events to fit screen comfortably (800x480 display)
+    const maxTotalEvents = 4; // Limit to 4 events to fit screen and stay above footer line (800x480 display)
 
     if (currentHourInTz >= cutoverHour) {
       // After cutover: show ALL tomorrow events
