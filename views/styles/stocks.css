@@ -1,0 +1,302 @@
+/* Stocks Dashboard Specific Styles */
+
+/* Stocks Layout */
+body.stocks-layout {
+  font-family: 'Geist Mono', monospace;
+}
+
+/* Stocks Section */
+.stocks-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.stocks-date-header {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #000;
+}
+
+/* Market Summary */
+.market-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  background: #f5f5f5;
+  border: 2px solid #000;
+  border-radius: 4px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.summary-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #666;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+}
+
+.summary-value.summary-gain {
+  color: #000;
+}
+
+.summary-value.summary-loss {
+  color: #000;
+}
+
+.summary-divider {
+  font-size: 18px;
+  color: #ccc;
+  font-weight: 300;
+}
+
+/* Stocks Grid */
+.stocks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+/* Stock Card */
+.stock-card {
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 12px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stock-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.stock-symbol-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.stock-symbol {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+}
+
+.stock-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.crypto-badge {
+  background: #000;
+  color: #fff;
+}
+
+.stock-name {
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stock-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.stock-price {
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+}
+
+.stock-change {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stock-change i {
+  font-size: 14px;
+}
+
+.stock-change.up {
+  color: #000;
+}
+
+.stock-change.up i::before {
+  content: '▲';
+  font-family: inherit;
+  font-style: normal;
+}
+
+.stock-change.down {
+  color: #000;
+}
+
+.stock-change.down i::before {
+  content: '▼';
+  font-family: inherit;
+  font-style: normal;
+}
+
+.stock-change-abs {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.stock-change-abs.up::before {
+  content: '+';
+}
+
+/* Sparkline */
+.stock-sparkline {
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: -1px;
+  color: #000;
+  font-family: monospace;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+/* No Stocks State */
+.no-stocks {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.no-stocks p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.no-stocks p:first-child {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+.no-stocks-hint {
+  font-size: 13px !important;
+  color: #999 !important;
+}
+
+/* Grid Layout Adjustments for Stocks */
+body.stocks-layout .main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  min-height: calc(var(--display-height) - 100px);
+}
+
+/* If calendar is present, use two columns */
+body.stocks-layout .main-grid:has(.calendar-section) {
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* Responsive adjustments for e-ink display (800x480) */
+@media (max-width: 800px) {
+  .stocks-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .stock-card {
+    padding: 10px;
+  }
+
+  .stock-price {
+    font-size: 18px;
+  }
+
+  .market-summary {
+    padding: 12px 15px;
+  }
+
+  .summary-value {
+    font-size: 16px;
+  }
+}
+
+/* Special layout for 800x480 e-ink display */
+@media (width: 800px) and (height: 480px) {
+  body.stocks-layout {
+    width: 800px;
+    height: 480px;
+    overflow: hidden;
+  }
+
+  .stocks-section {
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .stocks-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .stock-card {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .stock-symbol {
+    font-size: 14px;
+  }
+
+  .stock-price {
+    font-size: 16px;
+  }
+
+  .stock-name {
+    font-size: 10px;
+  }
+
+  .market-summary {
+    padding: 10px 12px;
+  }
+
+  .summary-value {
+    font-size: 14px;
+  }
+
+  .summary-label {
+    font-size: 10px;
+  }
+}

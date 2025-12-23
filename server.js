@@ -7,6 +7,7 @@ const { isAuthed } = require('./services/calendarService');
 const adminRoutes = require('./routes/admin');
 const dashboardRoutes = require('./routes/dashboard');
 const messageRoutes = require('./routes/message');
+const stocksAdminRoutes = require('./routes/stocksAdmin');
 
 const app = express();
 const PORT = process.env.PORT || 7272;
@@ -42,6 +43,7 @@ applyMiddleware(app);
 app.use('/', adminRoutes);
 app.use('/', dashboardRoutes);
 app.use('/api/message', messageRoutes);
+app.use('/', stocksAdminRoutes);
 
 // 404 handler
 app.use((req, res) => {

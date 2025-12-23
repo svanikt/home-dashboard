@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stocks Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/dashboard.css">
+  <link rel="stylesheet" href="/styles/stocks.css">
+  <script src="https://unpkg.com/@phosphor-icons/web@2.0.3"></script>
+  <style>
+    :root {
+      --display-width: <%= display_width %>px;
+      --display-height: <%= display_height %>px;
+    }
+  </style>
+</head>
+<body class="stocks-layout">
+  <%
+    const formatDate = (date, tz) => {
+      const d = new Date(date);
+
+      // Use timezone-aware formatting
+      const dayName = d.toLocaleDateString('en-US', { weekday: 'short', timeZone: tz });
+      const month = d.toLocaleDateString('en-US', { month: 'short', timeZone: tz });
+      const day = parseInt(d.toLocaleDateString('en-US', { day: 'numeric', timeZone: tz }), 10);
+      const year = d.toLocaleDateString('en-US', { year: 'numeric', timeZone: tz });
+
+      // Add ordinal suffix (st, nd, rd, th)
+      const getOrdinal = (n) => {
+        const s = ['th', 'st', 'nd', 'rd'];
+        const v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+      };
+
+      return `${dayName} ${month} ${getOrdinal(day)}, ${year}`;
+    };
+
+  %>
+
+  <!-- Message Board (always shown - either custom message or time-based greeting) -->
+  <% if (message) { %>
+  <div class="message-banner">
+    <i class="ph-bold <%= message.icon %> message-icon"></i>
+    <span class="message-text"><%= message.text %></span>
+  </div>
+  <% } %>
+
+  <!-- Main Content: Stocks Left, Calendar Right -->
+  <div class="main-grid">
+
+    <!-- Stocks Section (Left) -->
+    <div class="stocks-section">
+      <!-- Date Header -->
+      <div class="stocks-date-header">
+        <%= formatDate(date, timezone) %>
+      </div>
+
+      <!-- Market Summary -->
+      <% if (marketSummary && marketSummary.totalStocks > 0) { %>
+      <div class="market-summary">
+        <div class="summary-item">
+          <span class="summary-label">Total</span>
+          <span class="summary-value"><%= marketSummary.totalStocks %></span>
+        </div>
+        <div class="summary-divider">|</div>
+        <div class="summary-item">
+          <span class="summary-label">Gainers</span>
+          <span class="summary-value summary-gain"><%= marketSummary.gainers %></span>
+        </div>
+        <div class="summary-divider">|</div>
+        <div class="summary-item">
+          <span class="summary-label">Losers</span>
+          <span class="summary-value summary-loss"><%= marketSummary.losers %></span>
+        </div>
+        <div class="summary-divider">|</div>
+        <div class="summary-item">
+          <span class="summary-label">Avg</span>
+          <span class="summary-value <%= parseFloat(marketSummary.avgChange) >= 0 ? 'summary-gain' : 'summary-loss' %>">
+            <%= marketSummary.avgChange %>%
+          </span>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Stock Cards -->
+      <% if (stocks && stocks.length > 0) { %>
+      <div class="stocks-grid">
+        <% stocks.forEach(stock => { %>
+        <div class="stock-card">
+          <div class="stock-header">
+            <div class="stock-symbol-group">
+              <span class="stock-symbol"><%= stock.symbol %></span>
+              <% if (stock.type === 'crypto') { %>
+              <span class="stock-badge crypto-badge">CRYPTO</span>
+              <% } %>
+            </div>
+            <div class="stock-change <%= stock.direction %>">
+              <i class="ph-bold <%= stock.direction === 'up' ? 'ph-caret-up' : 'ph-caret-down' %>"></i>
+              <%= stock.changePercent %>
+            </div>
+          </div>
+          <div class="stock-name"><%= stock.name %></div>
+          <div class="stock-price-row">
+            <div class="stock-price">$<%= stock.price %></div>
+            <div class="stock-change-abs <%= stock.direction %>"><%= stock.change %></div>
+          </div>
+          <% if (stock.sparkline && stock.sparkline.length > 0) { %>
+          <div class="stock-sparkline">
+            <%
+              // Generate simple ASCII sparkline
+              const prices = stock.sparkline.map(s => s.price).filter(p => p != null);
+              if (prices.length > 0) {
+                const min = Math.min(...prices);
+                const max = Math.max(...prices);
+                const range = max - min || 1;
+                const bars = '▁▂▃▄▅▆▇█';
+                const sparkline = prices.map(p => {
+                  const normalized = (p - min) / range;
+                  const index = Math.min(Math.floor(normalized * bars.length), bars.length - 1);
+                  return bars[index];
+                }).join('');
+            %>
+            <%= sparkline %>
+            <% } %>
+          </div>
+          <% } %>
+        </div>
+        <% }) %>
+      </div>
+      <% } else { %>
+      <div class="no-stocks">
+        <p>No stocks configured</p>
+        <p class="no-stocks-hint">Visit the admin page to add symbols</p>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Calendar Section (Right) - Optional -->
+    <% if (calendar_events && calendar_events.length > 0) { %>
+    <div class="calendar-section">
+      <div class="calendar-header">Schedule</div>
+      <div class="calendar-events">
+        <% let lastDayLabel = ''; %>
+        <% calendar_events.forEach(event => { %>
+          <% if (event.dayLabel && event.dayLabel !== lastDayLabel) { %>
+            <div class="day-separator"><%= event.dayLabel %></div>
+            <% lastDayLabel = event.dayLabel; %>
+          <% } %>
+          <div class="event-item">
+            <div class="event-time"><%= event.time %></div>
+            <div class="event-title"><%= event.title %></div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+    <% } %>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-info">
+    <% if (battery_level !== null) { %>
+      <div>Battery <%= battery_level %>%</div>
+    <% } else { %>
+      <div></div>
+    <% } %>
+    <div>Updated <%= last_updated %></div>
+  </div>
+
+</body>
+</html>
