@@ -49,6 +49,15 @@ class StockService extends BaseService {
       .filter(result => result.status === 'fulfilled')
       .map(result => result.value);
 
+    // Log failed symbols
+    const failedSymbols = results
+      .filter(result => result.status === 'rejected')
+      .map((result, idx) => ({ symbol: symbols[idx], reason: result.reason.message }));
+
+    if (failedSymbols.length > 0) {
+      logger.warn?.(`[Stock Service] Failed to fetch ${failedSymbols.length} symbols:`, failedSymbols);
+    }
+
     if (stockData.length === 0) {
       throw new Error('Failed to fetch data for all symbols');
     }
