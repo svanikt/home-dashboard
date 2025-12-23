@@ -56,11 +56,11 @@ const dashboards = {
         refreshInterval: 60, // seconds
       },
       calendar: {
-        enabled: true,
+        enabled: false,
         authFile: 'auth-ro.json',
       },
       message: {
-        enabled: true,
+        enabled: false,
       },
     },
     template: 'dashboard-stocks',

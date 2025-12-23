@@ -40,15 +40,7 @@
 
   %>
 
-  <!-- Message Board (always shown - either custom message or time-based greeting) -->
-  <% if (message) { %>
-  <div class="message-banner">
-    <i class="ph-bold <%= message.icon %> message-icon"></i>
-    <span class="message-text"><%= message.text %></span>
-  </div>
-  <% } %>
-
-  <!-- Main Content: Stocks Left, Calendar Right -->
+  <!-- Main Content: Stocks Full Width -->
   <div class="main-grid">
 
     <!-- Stocks Section (Left) -->
@@ -137,26 +129,6 @@
       </div>
       <% } %>
     </div>
-
-    <!-- Calendar Section (Right) - Optional -->
-    <% if (calendar_events && calendar_events.length > 0) { %>
-    <div class="calendar-section">
-      <div class="calendar-header">Schedule</div>
-      <div class="calendar-events">
-        <% let lastDayLabel = ''; %>
-        <% calendar_events.forEach(event => { %>
-          <% if (event.dayLabel && event.dayLabel !== lastDayLabel) { %>
-            <div class="day-separator"><%= event.dayLabel %></div>
-            <% lastDayLabel = event.dayLabel; %>
-          <% } %>
-          <div class="event-item">
-            <div class="event-time"><%= event.time %></div>
-            <div class="event-title"><%= event.title %></div>
-          </div>
-        <% }) %>
-      </div>
-    </div>
-    <% } %>
 
   </div>
 

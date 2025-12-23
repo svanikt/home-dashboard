@@ -3,21 +3,27 @@
 /* Stocks Layout */
 body.stocks-layout {
   font-family: 'Geist Mono', monospace;
+  width: 800px;
+  height: 480px;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 /* Stocks Section */
 .stocks-section {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 20px;
+  gap: 12px;
+  padding: 15px;
+  height: 100%;
 }
 
 .stocks-date-header {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #000;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 2px solid #000;
 }
 
@@ -26,7 +32,7 @@ body.stocks-layout {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 20px;
+  padding: 10px 15px;
   background: #f5f5f5;
   border: 2px solid #000;
   border-radius: 4px;
@@ -40,14 +46,14 @@ body.stocks-layout {
 }
 
 .summary-label {
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   color: #666;
   font-weight: 500;
 }
 
 .summary-value {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   color: #000;
 }
@@ -69,19 +75,19 @@ body.stocks-layout {
 /* Stocks Grid */
 .stocks-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 }
 
 /* Stock Card */
 .stock-card {
   border: 2px solid #000;
   border-radius: 4px;
-  padding: 12px;
+  padding: 8px;
   background: #fff;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .stock-header {
@@ -99,7 +105,7 @@ body.stocks-layout {
 }
 
 .stock-symbol {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #000;
 }
@@ -118,7 +124,7 @@ body.stocks-layout {
 }
 
 .stock-name {
-  font-size: 11px;
+  font-size: 10px;
   color: #666;
   white-space: nowrap;
   overflow: hidden;
@@ -133,7 +139,7 @@ body.stocks-layout {
 }
 
 .stock-price {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   color: #000;
 }
@@ -220,83 +226,5 @@ body.stocks-layout .main-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0;
-  min-height: calc(var(--display-height) - 100px);
-}
-
-/* If calendar is present, use two columns */
-body.stocks-layout .main-grid:has(.calendar-section) {
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-}
-
-/* Responsive adjustments for e-ink display (800x480) */
-@media (max-width: 800px) {
-  .stocks-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px;
-  }
-
-  .stock-card {
-    padding: 10px;
-  }
-
-  .stock-price {
-    font-size: 18px;
-  }
-
-  .market-summary {
-    padding: 12px 15px;
-  }
-
-  .summary-value {
-    font-size: 16px;
-  }
-}
-
-/* Special layout for 800x480 e-ink display */
-@media (width: 800px) and (height: 480px) {
-  body.stocks-layout {
-    width: 800px;
-    height: 480px;
-    overflow: hidden;
-  }
-
-  .stocks-section {
-    padding: 15px;
-    gap: 15px;
-  }
-
-  .stocks-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-
-  .stock-card {
-    padding: 8px;
-    gap: 6px;
-  }
-
-  .stock-symbol {
-    font-size: 14px;
-  }
-
-  .stock-price {
-    font-size: 16px;
-  }
-
-  .stock-name {
-    font-size: 10px;
-  }
-
-  .market-summary {
-    padding: 10px 12px;
-  }
-
-  .summary-value {
-    font-size: 14px;
-  }
-
-  .summary-label {
-    font-size: 10px;
-  }
+  height: calc(100% - 45px); /* Account for footer */
 }
