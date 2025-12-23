@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/dashboard.css">
+  <script src="https://unpkg.com/@phosphor-icons/web@2.0.3"></script>
+  <style>
+    :root {
+      --display-width: <%= display_width %>px;
+      --display-height: <%= display_height %>px;
+    }
+  </style>
+</head>
+<body class="new-layout">
+  <%
+    const formatDate = (date, tz) => {
+      const d = new Date(date);
+
+      // Use timezone-aware formatting
+      const dayName = d.toLocaleDateString('en-US', { weekday: 'short', timeZone: tz });
+      const month = d.toLocaleDateString('en-US', { month: 'short', timeZone: tz });
+      const day = parseInt(d.toLocaleDateString('en-US', { day: 'numeric', timeZone: tz }), 10);
+      const year = d.toLocaleDateString('en-US', { year: 'numeric', timeZone: tz });
+
+      // Add ordinal suffix (st, nd, rd, th)
+      const getOrdinal = (n) => {
+        const s = ['th', 'st', 'nd', 'rd'];
+        const v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+      };
+
+      return `${dayName} ${month} ${getOrdinal(day)}, ${year}`;
+    };
+
+  %>
+
+  <!-- Message Board (always shown - either custom message or time-based greeting) -->
+  <% if (message) { %>
+  <div class="message-banner">
+    <i class="ph-bold <%= message.icon %> message-icon"></i>
+    <span class="message-text"><%= message.text %></span>
+  </div>
+  <% } %>
+
+  <!-- Main Content: Weather Left, Calendar Right -->
+  <div class="main-grid">
+
+    <!-- Weather Section (Left) -->
+    <div class="weather-section">
+      <%
+        const getWeatherIcon = (icon) => {
+          const iconMap = {
+            'clear-day': 'ph-sun',
+            'clear-night': 'ph-moon',
+            'partly-cloudy-day': 'ph-cloud-sun',
+            'partly-cloudy-night': 'ph-cloud-moon',
+            'cloudy': 'ph-cloud',
+            'rain': 'ph-cloud-rain',
+            'snow': 'ph-snowflake',
+            'wind': 'ph-wind',
+            'fog': 'ph-cloud-fog'
+          };
+          return iconMap[icon] || 'ph-sun';
+        };
+
+        const mainLocation = locations[0] || {};
+        const precipChance = mainLocation.rain_chance || 0;
+      %>
+
+      <!-- Date Header -->
+      <div class="weather-date-header">
+        <%= formatDate(date, timezone) %>
+      </div>
+
+      <!-- Current Temp with Icon and Low/High -->
+      <div class="weather-temp-display">
+        <div class="icon-and-range">
+          <i class="ph-bold <%= getWeatherIcon(mainLocation.weather_icon) %> weather-icon-big"></i>
+          <div class="temp-range-inline"><%= Math.round(mainLocation.low_c) %>° / <%= Math.round(mainLocation.high_c) %>°</div>
+        </div>
+        <div class="temp-huge"><%= Math.round(current_temp_c) %>°</div>
+      </div>
+
+      <!-- Feels Like & Precipitation -->
+      <div class="weather-meta">
+        <span class="feels-like">Feels like <%= Math.round(feels_like_c) %>°</span>
+        <% if (precipChance > 0) { %>
+        <span class="meta-divider">|</span>
+        <span class="precip-info"><i class="ph-bold ph-drop"></i> <%= precipChance %>%</span>
+        <% } %>
+      </div>
+
+      <!-- Weather Description -->
+      <% if (mainLocation.description) { %>
+      <div class="weather-description">
+        <%= mainLocation.description %>
+      </div>
+      <% } %>
+
+      <!-- Wardrobe Box -->
+      <% if (wardrobe) { %>
+      <div class="wardrobe-box-new">
+        <div class="wardrobe-content">
+          <i class="ph-bold ph-coat-hanger wardrobe-icon-phosphor"></i>
+          <div class="wardrobe-text-new"><%= wardrobe %></div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Calendar Section (Right) -->
+    <div class="calendar-section">
+      <div class="calendar-header">Schedule</div>
+
+      <% if (calendar_events && calendar_events.length > 0) { %>
+        <div class="calendar-events">
+          <% let lastDayLabel = ''; %>
+          <% calendar_events.forEach(event => { %>
+            <% if (event.dayLabel && event.dayLabel !== lastDayLabel) { %>
+              <div class="day-separator"><%= event.dayLabel %></div>
+              <% lastDayLabel = event.dayLabel; %>
+            <% } %>
+            <div class="event-item">
+              <div class="event-time"><%= event.time %></div>
+              <div class="event-title"><%= event.title %></div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="no-events">No upcoming events</div>
+      <% } %>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-info">
+    <% if (battery_level !== null) { %>
+      <div>Battery <%= battery_level %>%</div>
+    <% } else { %>
+      <div></div>
+    <% } %>
+    <div>Updated <%= last_updated %></div>
+  </div>
+
+</body>
+</html>
