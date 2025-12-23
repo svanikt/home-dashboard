@@ -38,6 +38,7 @@ class StockService extends BaseService {
       throw new Error('No stock symbols provided');
     }
 
+    console.log(`[Stock Service] Fetching data for symbols: ${symbols.join(', ')}`);
     logger.info?.(`[Stock Service] Fetching data for symbols: ${symbols.join(', ')}`);
 
     // Fetch all symbols in parallel
@@ -51,17 +52,18 @@ class StockService extends BaseService {
 
     // Log failed symbols
     const failedSymbols = results
-      .filter(result => result.status === 'rejected')
-      .map((result, idx) => ({ symbol: symbols[idx], reason: result.reason.message }));
+      .map((result, idx) => result.status === 'rejected' ? { symbol: symbols[idx], reason: result.reason.message } : null)
+      .filter(item => item !== null);
 
     if (failedSymbols.length > 0) {
-      logger.warn?.(`[Stock Service] Failed to fetch ${failedSymbols.length} symbols:`, failedSymbols);
+      console.error(`[Stock Service] Failed to fetch ${failedSymbols.length} symbols:`, JSON.stringify(failedSymbols));
     }
 
     if (stockData.length === 0) {
       throw new Error('Failed to fetch data for all symbols');
     }
 
+    console.log(`[Stock Service] Successfully fetched ${stockData.length}/${symbols.length} symbols:`, stockData.map(s => s.symbol).join(', '));
     logger.info?.(`[Stock Service] Successfully fetched ${stockData.length}/${symbols.length} symbols`);
 
     return stockData;
