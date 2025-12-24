@@ -27,10 +27,13 @@ function validateDashboard(req, res, next) {
 
 /**
  * GET /api/dashboard/:dashboardId - Dashboard data API
+ * Query params:
+ *   - refresh=true: Force refresh cache and fetch fresh data
  */
 router.get('/api/dashboard/:dashboardId', validateDashboard, async (req, res) => {
   try {
-    const data = await buildDashboardData(req.params.dashboardId, req, console);
+    const forceRefresh = req.query.refresh === 'true';
+    const data = await buildDashboardData(req.params.dashboardId, req, console, forceRefresh);
     // Remove internal service statuses from public API response
     const { _serviceStatuses, ...publicData } = data;
     res.type('application/json').status(200).json(publicData);
@@ -45,11 +48,15 @@ router.get('/api/dashboard/:dashboardId', validateDashboard, async (req, res) =>
 
 /**
  * GET /dashboard/:dashboardId - Server-side rendered dashboard view
+ * Query params:
+ *   - battery: Battery level (0-100)
+ *   - refresh=true: Force refresh cache and fetch fresh data
  */
 router.get('/dashboard/:dashboardId', validateDashboard, async (req, res) => {
   try {
     const dashboardConfig = req.dashboardConfig;
-    const data = await buildDashboardData(req.params.dashboardId, req, console);
+    const forceRefresh = req.query.refresh === 'true';
+    const data = await buildDashboardData(req.params.dashboardId, req, console, forceRefresh);
     data.isDevelopment = true;
 
     // Parse battery level from query param (0-100) if provided
