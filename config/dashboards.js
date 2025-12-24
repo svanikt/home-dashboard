@@ -53,7 +53,7 @@ const dashboards = {
       stocks: {
         enabled: true,
         symbols: (process.env.RO_STOCK_SYMBOLS || 'AAPL,GOOGL,MSFT,TSLA').split(','),
-        refreshInterval: 60, // seconds
+        refreshInterval: 900, // seconds (15 minutes for e-ink display)
       },
       calendar: {
         enabled: false,
