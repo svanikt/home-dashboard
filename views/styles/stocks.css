@@ -8,23 +8,139 @@ body.stocks-layout {
   overflow: hidden;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Stocks Section */
+/* Page Header */
+.page-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  padding: 12px 15px;
+  border-bottom: 2px solid #000;
+}
+
+/* Main Grid - Two Column Layout */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr; /* Vedic left (55%), Stocks right (45%) */
+  gap: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Vedic Astrology Section (Left) */
+.vedic-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
+  border-right: 2px solid #000;
+  overflow-y: auto;
+}
+
+.vedic-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+/* Dasha Section */
+.vedic-dasha {
+  padding: 12px;
+  background: #f5f5f5;
+  border: 2px solid #000;
+  border-radius: 4px;
+}
+
+.dasha-planet {
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+  margin-top: 5px;
+}
+
+.dasha-ends {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* Predictions Section */
+.vedic-predictions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prediction-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.prediction-category {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.prediction-category.financial {
+  color: #2d5016;
+}
+
+.prediction-category.health {
+  color: #8b0000;
+}
+
+.prediction-category.relationship {
+  color: #4b0082;
+}
+
+.prediction-category.general {
+  color: #000;
+}
+
+.prediction-text {
+  color: #333;
+}
+
+/* Vedic Unavailable */
+.vedic-unavailable {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.vedic-unavailable p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.vedic-unavailable p:first-child {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 8px;
+}
+
+.vedic-hint {
+  font-size: 11px !important;
+  color: #999 !important;
+}
+
+/* Stocks Section (Right) */
 .stocks-section {
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 15px;
-  height: 100%;
-}
-
-.stocks-date-header {
-  font-size: 16px;
-  font-weight: 600;
-  color: #000;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #000;
+  overflow-y: auto;
 }
 
 /* Market Summary */
@@ -75,8 +191,8 @@ body.stocks-layout {
 /* Stocks Grid */
 .stocks-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 }
 
 /* Stock Card */
@@ -221,10 +337,7 @@ body.stocks-layout {
   color: #999 !important;
 }
 
-/* Grid Layout Adjustments for Stocks */
-body.stocks-layout .main-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0;
-  height: calc(100% - 45px); /* Account for footer */
+/* Footer adjustments */
+.footer-info {
+  border-top: 2px solid #000;
 }

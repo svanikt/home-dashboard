@@ -40,16 +40,48 @@
 
   %>
 
-  <!-- Main Content: Stocks Full Width -->
+  <!-- Date Header (Full width) -->
+  <div class="page-header">
+    <%= formatDate(date, timezone) %>
+  </div>
+
+  <!-- Main Content: Two Column Layout -->
   <div class="main-grid">
 
-    <!-- Stocks Section (Left) -->
-    <div class="stocks-section">
-      <!-- Date Header -->
-      <div class="stocks-date-header">
-        <%= formatDate(date, timezone) %>
-      </div>
+    <!-- Vedic Astrology Section (Left) -->
+    <div class="vedic-section">
+      <% if (vedicAstrology && vedicAstrology.currentDasha) { %>
+        <!-- Current Dasha -->
+        <div class="vedic-dasha">
+          <div class="vedic-section-title">Current Dasha</div>
+          <div class="dasha-planet"><%= vedicAstrology.currentDasha.planet %></div>
+          <div class="dasha-ends">Until <%= vedicAstrology.currentDasha.endsOn %></div>
+        </div>
+      <% } %>
 
+      <% if (vedicAstrology && vedicAstrology.predictions && vedicAstrology.predictions.length > 0) { %>
+        <!-- Daily Predictions -->
+        <div class="vedic-predictions">
+          <div class="vedic-section-title">Daily Insights</div>
+          <% vedicAstrology.predictions.slice(0, 3).forEach(prediction => { %>
+            <div class="prediction-item">
+              <span class="prediction-category <%= prediction.category %>">●</span>
+              <span class="prediction-text"><%= prediction.text %></span>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <% if (!vedicAstrology) { %>
+        <div class="vedic-unavailable">
+          <p>Vedic astrology data unavailable</p>
+          <p class="vedic-hint">Configure birth details in dashboard config</p>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Stocks Section (Right) -->
+    <div class="stocks-section">
       <!-- Market Summary -->
       <% if (marketSummary && marketSummary.totalStocks > 0) { %>
       <div class="market-summary">

@@ -55,6 +55,14 @@ const dashboards = {
         symbols: (process.env.RO_STOCK_SYMBOLS || 'AAPL,GOOGL,MSFT,TSLA').split(','),
         refreshInterval: 900, // seconds (15 minutes for e-ink display)
       },
+      vedic: {
+        enabled: true,
+        // Placeholder birth data - update with actual birth details
+        // Format: HH:MM/DD/MM/YYYY/TIMEZONE (e.g., 14:30/15/05/1960/+05:30)
+        birthTime: process.env.RO_BIRTH_TIME || '12:00/01/01/1960/+05:30',
+        // Format: latitude,longitude (e.g., 28.6139,77.2090 for Delhi)
+        birthLocation: process.env.RO_BIRTH_LOCATION || '28.6139,77.2090',
+      },
       calendar: {
         enabled: false,
         authFile: 'auth-ro.json',
