@@ -159,8 +159,8 @@ class ProkeralaService extends BaseService {
         }
       );
 
-      logger.info?.('[Prokerala] Panchang response:', JSON.stringify(response.data).substring(0, 500));
-      return this.parsePanchang(response.data);
+      logger.info?.('[Prokerala] Panchang response (full):', JSON.stringify(response.data));
+      return this.parsePanchang(response.data, logger);
     } catch (error) {
       logger.error?.('[Prokerala] Failed to fetch Panchang:', error.message);
       if (error.response) {
@@ -296,9 +296,10 @@ class ProkeralaService extends BaseService {
   /**
    * Parse Panchang response
    * @param {Object} data - API response
+   * @param {Object} logger - Logger instance
    * @returns {Object} Parsed Panchang
    */
-  parsePanchang(data) {
+  parsePanchang(data, logger) {
     if (!data || !data.data) return null;
 
     const p = data.data;
@@ -316,12 +317,12 @@ class ProkeralaService extends BaseService {
     const karana = getCurrentItem(p.karana);
 
     // Log muhurta times for debugging
-    console.log('[Prokerala] Muhurta times debug:', {
+    logger.info?.('[Prokerala] Muhurta times debug:', JSON.stringify({
       rahu_kalam: p.rahu_kalam,
       yamaghanda: p.yamaghanda,
       gulika: p.gulika,
       availableKeys: Object.keys(p)
-    });
+    }));
 
     return {
       vara: p.vaara || 'N/A',
