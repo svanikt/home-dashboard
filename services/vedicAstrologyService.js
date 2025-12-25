@@ -16,8 +16,8 @@ class VedicAstrologyService extends BaseService {
       retryAttempts: 2,
       retryCooldown: 2000,
     });
-    this.apiBase = 'https://api.vedastro.org';
-    this.apiKey = process.env.VEDASTRO_API_KEY || ''; // Optional
+    this.apiBase = 'http://api.vedastro.org/api/Calculate';
+    this.apiKey = process.env.VEDASTRO_API_KEY || 'FreeAPIUser'; // Use free tier
   }
 
   isEnabled() {
@@ -91,13 +91,15 @@ class VedicAstrologyService extends BaseService {
    */
   async fetchHoroscopePredictions(birthTime, birthLocation, logger) {
     try {
-      const url = `${this.apiBase}/Calculate/HoroscopePrediction/PlanetName/All/HouseName/All/Time/${birthTime}/Location/${birthLocation}`;
+      const url = `${this.apiBase}/HoroscopePredictions/Location/${birthLocation}/Time/${birthTime}/APIKey/${this.apiKey}`;
 
       logger.info?.(`[Vedic Astrology] Fetching predictions from: ${url}`);
 
       const response = await axios.get(url, {
         timeout: 15000,
-        headers: this.getHeaders(),
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; VedicDashboard/1.0)',
+        },
       });
 
       // VedAstro returns XML, parse it
@@ -128,10 +130,12 @@ class VedicAstrologyService extends BaseService {
       // Fetch in parallel
       const promises = planets.map(async (planet) => {
         try {
-          const url = `${this.apiBase}/Calculate/PlanetName/${planet}/Time/${time}/Location/${location}`;
+          const url = `${this.apiBase}/PlanetZodiacSign/PlanetName/${planet}/Location/${location}/Time/${time}/APIKey/${this.apiKey}`;
           const response = await axios.get(url, {
             timeout: 10000,
-            headers: this.getHeaders(),
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (compatible; VedicDashboard/1.0)',
+            },
           });
 
           planetData[planet] = this.parsePlanetData(response.data);
@@ -161,16 +165,15 @@ class VedicAstrologyService extends BaseService {
   async fetchCurrentDasha(birthTime, birthLocation, logger) {
     try {
       const now = new Date();
-      const endDate = new Date(now.getFullYear() + 5, now.getMonth(), now.getDate()); // 5 years ahead
-
       const currentTime = this.formatCurrentTime();
-      const endTime = this.formatDate(endDate);
 
-      const url = `${this.apiBase}/Calculate/DasaPeriod/BirthTime/${birthTime}/BirthLocation/${birthLocation}/StartTime/${currentTime}/StartLocation/${birthLocation}/EndTime/${endTime}/EndLocation/${birthLocation}/DasaLevel/3`;
+      const url = `${this.apiBase}/CurrentDasa8Levels/Location/${birthLocation}/Time/${birthTime}/TimeNow/${currentTime}/APIKey/${this.apiKey}`;
 
       const response = await axios.get(url, {
         timeout: 15000,
-        headers: this.getHeaders(),
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; VedicDashboard/1.0)',
+        },
       });
 
       const dasha = this.parseDashaData(response.data);
@@ -184,66 +187,26 @@ class VedicAstrologyService extends BaseService {
     }
   }
 
-  /**
-   * Format date for API
-   * @param {Date} date - Date object
-   * @returns {string} Formatted date string
-   */
-  formatDate(date) {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-
-    const offset = -date.getTimezoneOffset();
-    const offsetHours = Math.floor(Math.abs(offset) / 60);
-    const offsetMinutes = Math.abs(offset) % 60;
-    const offsetSign = offset >= 0 ? '+' : '-';
-    const timezone = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`;
-
-    return `${hours}:${minutes}/${day}/${month}/${year}/${timezone}`;
-  }
 
   /**
-   * Get request headers
-   * @returns {Object} Headers object
-   */
-  getHeaders() {
-    const headers = {
-      'User-Agent': 'Mozilla/5.0 (compatible; VedicDashboard/1.0)',
-    };
-
-    if (this.apiKey) {
-      headers['x-api-key'] = this.apiKey;
-    }
-
-    return headers;
-  }
-
-  /**
-   * Parse horoscope predictions from XML response
-   * @param {string} xmlData - XML response
+   * Parse horoscope predictions from JSON response
+   * @param {Object} data - JSON response from VedAstro API
    * @returns {Array} Parsed predictions
    */
-  parseHoroscopePredictions(xmlData) {
-    // Basic XML parsing - look for prediction text
-    // VedAstro returns predictions in XML format
+  parseHoroscopePredictions(data) {
     const predictions = [];
 
     try {
-      // Extract prediction text from XML (basic regex parsing)
-      const predictionRegex = /<Name>(.*?)<\/Name>/g;
-      let match;
-
-      while ((match = predictionRegex.exec(xmlData)) !== null) {
-        const text = match[1].trim();
-        if (text && text.length > 10) {
-          predictions.push({
-            text,
-            category: this.categorizePrediction(text),
-          });
-        }
+      // VedAstro returns JSON with structure: {Status: ..., Payload: [...]}
+      if (data && data.Payload && Array.isArray(data.Payload)) {
+        data.Payload.forEach(prediction => {
+          if (prediction.Name) {
+            predictions.push({
+              text: prediction.Name,
+              category: this.categorizePrediction(prediction.Name),
+            });
+          }
+        });
       }
     } catch (error) {
       console.error('[Vedic Astrology] Error parsing predictions:', error.message);
@@ -272,43 +235,38 @@ class VedicAstrologyService extends BaseService {
   }
 
   /**
-   * Parse planet data from XML response
-   * @param {string} xmlData - XML response
+   * Parse planet data from JSON response
+   * @param {Object} data - JSON response from VedAstro API
    * @returns {Object} Parsed planet data
    */
-  parsePlanetData(xmlData) {
-    // Extract zodiac sign and degree
-    const data = {};
+  parsePlanetData(data) {
+    const planetInfo = {};
 
     try {
-      const signMatch = xmlData.match(/<ZodiacSignName>(.*?)<\/ZodiacSignName>/);
-      const degreeMatch = xmlData.match(/<Degrees>(.*?)<\/Degrees>/);
-
-      if (signMatch) data.sign = signMatch[1];
-      if (degreeMatch) data.degree = parseFloat(degreeMatch[1]);
+      // VedAstro returns {Status: ..., Payload: {Name: "Aries", ...}}
+      if (data && data.Payload) {
+        planetInfo.sign = data.Payload.Name || data.Payload;
+      }
     } catch (error) {
       console.error('[Vedic Astrology] Error parsing planet data:', error.message);
     }
 
-    return data;
+    return planetInfo;
   }
 
   /**
-   * Parse Dasha data from XML response
-   * @param {string} xmlData - XML response
+   * Parse Dasha data from JSON response
+   * @param {Object} data - JSON response from VedAstro API
    * @returns {Object|null} Parsed Dasha data
    */
-  parseDashaData(xmlData) {
+  parseDashaData(data) {
     try {
-      // Extract first Dasha period
-      const planetMatch = xmlData.match(/<Name>(.*?)<\/Name>/);
-      const startMatch = xmlData.match(/<StartTime>(.*?)<\/StartTime>/);
-      const endMatch = xmlData.match(/<EndTime>(.*?)<\/EndTime>/);
-
-      if (planetMatch && endMatch) {
+      // VedAstro returns {Status: ..., Payload: [...]}
+      if (data && data.Payload && Array.isArray(data.Payload) && data.Payload.length > 0) {
+        const firstDasha = data.Payload[0];
         return {
-          planet: planetMatch[1],
-          endsOn: endMatch[1],
+          planet: firstDasha.Name || firstDasha.PlanetName || 'Unknown',
+          endsOn: firstDasha.EndTime || 'Unknown',
         };
       }
     } catch (error) {
