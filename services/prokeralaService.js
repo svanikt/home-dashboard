@@ -315,6 +315,14 @@ class ProkeralaService extends BaseService {
     const yoga = getCurrentItem(p.yoga);
     const karana = getCurrentItem(p.karana);
 
+    // Log muhurta times for debugging
+    console.log('[Prokerala] Muhurta times debug:', {
+      rahu_kalam: p.rahu_kalam,
+      yamaghanda: p.yamaghanda,
+      gulika: p.gulika,
+      availableKeys: Object.keys(p)
+    });
+
     return {
       vara: p.vaara || 'N/A',
       tithi: tithi?.name || 'N/A',
