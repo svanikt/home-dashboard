@@ -46,22 +46,21 @@
     <div>Updated <%= last_updated %></div>
   </div>
 
-  <!-- Main Content: Two Column Layout -->
+  <!-- Main Content: Three Column Layout -->
   <div class="main-grid">
 
-    <!-- Vedic Astrology Section (Left) -->
+    <!-- Birth Chart Column (Left) -->
+    <div class="chart-column">
+      <% if (vedicAstrology && vedicAstrology.chartSvg) { %>
+        <div class="birth-chart">
+          <%- vedicAstrology.chartSvg %>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Vedic Astrology Data Column (Middle) -->
     <div class="vedic-section">
       <% if (vedicAstrology) { %>
-
-        <!-- Birth Chart SVG -->
-        <% if (vedicAstrology.chartSvg) { %>
-          <div class="birth-chart-container">
-            <div class="vedic-section-title">Rasi Chart</div>
-            <div class="birth-chart">
-              <%- vedicAstrology.chartSvg %>
-            </div>
-          </div>
-        <% } %>
 
         <!-- Panchang (Daily Elements) -->
         <% if (vedicAstrology.panchang) { %>

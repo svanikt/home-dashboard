@@ -24,21 +24,30 @@ body.stocks-layout {
   border-bottom: 2px solid #000;
 }
 
-/* Main Grid - Two Column Layout */
+/* Main Grid - Three Column Layout */
 .main-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr; /* Vedic left (55%), Stocks right (45%) */
+  grid-template-columns: auto 1fr 1fr; /* Chart (auto), Panchang (flex), Stocks (flex) */
   gap: 0;
   flex: 1;
   overflow: hidden;
 }
 
-/* Vedic Astrology Section (Left) */
+/* Chart Column */
+.chart-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  border-right: 2px solid #000;
+}
+
+/* Vedic Astrology Section (Middle) */
 .vedic-section {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 10px;
+  gap: 8px;
+  padding: 12px;
   border-right: 2px solid #000;
   overflow-y: auto;
 }
@@ -53,11 +62,6 @@ body.stocks-layout {
 }
 
 /* Birth Chart */
-.birth-chart-container {
-  display: flex;
-  flex-direction: column;
-}
-
 .birth-chart {
   display: flex;
   justify-content: center;
@@ -65,11 +69,10 @@ body.stocks-layout {
 }
 
 .birth-chart svg {
-  max-width: 220px;
-  max-height: 220px;
+  width: 100%;
+  max-width: 280px;
   height: auto;
   display: block;
-  margin: 0 auto;
 }
 
 /* Panchang */
@@ -91,7 +94,7 @@ body.stocks-layout {
 }
 
 .panchang-label {
-  font-size: 9px;
+  font-size: 11px;
   text-transform: uppercase;
   color: #666;
   font-weight: 600;
@@ -99,7 +102,7 @@ body.stocks-layout {
 }
 
 .panchang-value {
-  font-size: 11px;
+  font-size: 14px;
   color: #000;
   font-weight: 500;
 }
@@ -285,8 +288,8 @@ body.stocks-layout {
 
 /* Stocks Grid */
 .stocks-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
