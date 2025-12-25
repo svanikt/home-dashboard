@@ -187,11 +187,14 @@ class VedicAstrologyService extends BaseService {
       // Parse time into components for Azure Functions API
       const { hhmm, day, month, year, offset } = this.parseTimeString(time);
 
+      // URL-encode the offset (+ and : need encoding)
+      const encodedOffset = encodeURIComponent(offset);
+
       // Fetch in parallel
       const promises = planets.map(async (planet) => {
         try {
           // Azure Functions route: api/Location/{locationName}/Time/{hhmmStr}/{dateStr}/{monthStr}/{yearStr}/{offsetStr}/Planet/{planetNameStr}/{propertyName}
-          const url = `${this.apiBase}/Location/${location}/Time/${hhmm}/${day}/${month}/${year}/${offset}/Planet/${planet}/PlanetZodiacSign`;
+          const url = `${this.apiBase}/Location/${location}/Time/${hhmm}/${day}/${month}/${year}/${encodedOffset}/Planet/${planet}/PlanetZodiacSign`;
 
           logger.info?.(`[Vedic Astrology] Fetching ${planet} from: ${url}`);
 
