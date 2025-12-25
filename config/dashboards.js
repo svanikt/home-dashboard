@@ -57,11 +57,15 @@ const dashboards = {
       },
       vedic: {
         enabled: true,
-        // Placeholder birth data - update with actual birth details
-        // Format: HH:MM/DD/MM/YYYY/TIMEZONE (e.g., 14:30/15/05/1960/+05:30)
-        birthTime: process.env.RO_BIRTH_TIME || '12:00/01/01/1960/+05:30',
-        // Format: latitude,longitude (e.g., 28.6139,77.2090 for Delhi)
-        birthLocation: process.env.RO_BIRTH_LOCATION || '28.6139,77.2090',
+        // Birth details for VedicRishi API
+        day: parseInt(process.env.RO_BIRTH_DAY || '1'),
+        month: parseInt(process.env.RO_BIRTH_MONTH || '1'),
+        year: parseInt(process.env.RO_BIRTH_YEAR || '1960'),
+        hour: parseInt(process.env.RO_BIRTH_HOUR || '12'),
+        minute: parseInt(process.env.RO_BIRTH_MINUTE || '0'),
+        latitude: parseFloat(process.env.RO_BIRTH_LAT || '28.6139'),
+        longitude: parseFloat(process.env.RO_BIRTH_LON || '77.2090'),
+        timezone: parseFloat(process.env.RO_BIRTH_TIMEZONE || '5.5'),
       },
       calendar: {
         enabled: false,

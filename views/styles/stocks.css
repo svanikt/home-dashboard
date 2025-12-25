@@ -49,26 +49,39 @@ body.stocks-layout {
   letter-spacing: 0.5px;
 }
 
-/* Birth Chart */
-.birth-chart-container {
+/* Panchang */
+.panchang-container {
   display: flex;
   flex-direction: column;
 }
 
-.birth-chart {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  background: #fff;
-  border: 2px solid #000;
-  border-radius: 4px;
+.panchang-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
 }
 
-.birth-chart svg {
-  max-width: 100%;
-  height: auto;
-  max-height: 140px;
+.panchang-item {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px;
+  background: #f5f5f5;
+  border: 2px solid #000;
+  border-radius: 3px;
+}
+
+.panchang-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.panchang-value {
+  font-size: 11px;
+  color: #000;
+  font-weight: 500;
 }
 
 /* Dasha Section */
@@ -94,37 +107,39 @@ body.stocks-layout {
   margin-top: 4px;
 }
 
-/* Planetary Positions */
-.planetary-positions {
+/* Muhurta Times */
+.muhurta-container {
   display: flex;
   flex-direction: column;
 }
 
-.planets-grid {
+.muhurta-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 6px;
 }
 
-.planet-item {
+.muhurta-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   padding: 6px 8px;
-  background: #f5f5f5;
-  border: 1px solid #ddd;
+  background: #fff5f5;
+  border: 2px solid #8b0000;
   border-radius: 3px;
-  font-size: 10px;
 }
 
-.planet-name {
-  font-weight: 600;
-  color: #000;
-}
-
-.planet-sign {
-  color: #666;
+.muhurta-label {
   font-size: 9px;
+  text-transform: uppercase;
+  color: #8b0000;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.muhurta-value {
+  font-size: 10px;
+  color: #000;
+  font-weight: 500;
 }
 
 /* Predictions Section */
@@ -146,7 +161,7 @@ body.stocks-layout {
   border-radius: 2px;
 }
 
-.prediction-item.financial {
+.prediction-item.profession {
   border-left-color: #2d5016;
   background: #f0f5ed;
 }
@@ -156,19 +171,22 @@ body.stocks-layout {
   background: #fef0f0;
 }
 
-.prediction-item.relationship {
+.prediction-item.luck {
   border-left-color: #4b0082;
   background: #f5f0f9;
 }
 
-.prediction-item.general {
-  border-left-color: #000;
-  background: #f9f9f9;
+.prediction-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 4px;
 }
 
 .prediction-text {
   font-size: 10px;
-  line-height: 1.5;
+  line-height: 1.4;
   color: #333;
 }
 
