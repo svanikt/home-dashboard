@@ -16,8 +16,9 @@ class VedicAstrologyService extends BaseService {
       retryAttempts: 2,
       retryCooldown: 2000,
     });
-    this.apiBase = 'http://api.vedastro.org/api/Calculate';
-    this.apiKey = process.env.VEDASTRO_API_KEY || 'FreeAPIUser'; // Use free tier
+    // Use self-hosted Docker instance on localhost (no rate limits!)
+    this.apiBase = process.env.VEDASTRO_API_URL || 'http://localhost:7080/api/Calculate';
+    this.apiKey = process.env.VEDASTRO_API_KEY || 'SelfHosted';
   }
 
   isEnabled() {
