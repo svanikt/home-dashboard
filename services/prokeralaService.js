@@ -152,6 +152,9 @@ class ProkeralaService extends BaseService {
       return this.parsePanchang(response.data);
     } catch (error) {
       logger.error?.('[Prokerala] Failed to fetch Panchang:', error.message);
+      if (error.response) {
+        logger.error?.('[Prokerala] Panchang error details:', JSON.stringify(error.response.data));
+      }
       return null;
     }
   }
@@ -188,6 +191,9 @@ class ProkeralaService extends BaseService {
       return this.parseKundli(response.data);
     } catch (error) {
       logger.error?.('[Prokerala] Failed to fetch Kundli:', error.message);
+      if (error.response) {
+        logger.error?.('[Prokerala] Kundli error details:', JSON.stringify(error.response.data));
+      }
       return null;
     }
   }
