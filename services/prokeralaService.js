@@ -159,6 +159,7 @@ class ProkeralaService extends BaseService {
         }
       );
 
+      logger.info?.('[Prokerala] Panchang response:', JSON.stringify(response.data).substring(0, 500));
       return this.parsePanchang(response.data);
     } catch (error) {
       logger.error?.('[Prokerala] Failed to fetch Panchang:', error.message);

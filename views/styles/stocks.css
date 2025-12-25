@@ -34,18 +34,18 @@ body.stocks-layout {
 .vedic-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 15px;
+  gap: 8px;
+  padding: 12px;
   border-right: 2px solid #000;
   overflow-y: auto;
 }
 
 .vedic-section-title {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   color: #666;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   letter-spacing: 0.5px;
 }
 
@@ -59,7 +59,7 @@ body.stocks-layout {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding: 6px;
   background: #fff;
   border: 2px solid #000;
   border-radius: 4px;
@@ -67,8 +67,11 @@ body.stocks-layout {
 
 .birth-chart svg {
   max-width: 100%;
+  width: 100%;
   height: auto;
-  max-height: 120px;
+  max-height: 100px;
+  display: block;
+  margin: 0 auto;
 }
 
 /* Panchang */
@@ -86,7 +89,7 @@ body.stocks-layout {
 .panchang-item {
   display: flex;
   flex-direction: column;
-  padding: 6px 8px;
+  padding: 4px 6px;
   background: #f5f5f5;
   border: 2px solid #000;
   border-radius: 3px;
@@ -114,19 +117,19 @@ body.stocks-layout {
 }
 
 .dasha-content {
-  padding: 10px 12px;
+  padding: 8px 10px;
 }
 
 .dasha-planet {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   color: #000;
 }
 
 .dasha-ends {
-  font-size: 10px;
+  font-size: 9px;
   color: #666;
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 /* Muhurta Times */
@@ -144,7 +147,7 @@ body.stocks-layout {
 .muhurta-item {
   display: flex;
   flex-direction: column;
-  padding: 6px 8px;
+  padding: 4px 6px;
   background: #fff5f5;
   border: 2px solid #8b0000;
   border-radius: 3px;
@@ -173,11 +176,11 @@ body.stocks-layout {
 .predictions-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .prediction-item {
-  padding: 8px 10px;
+  padding: 6px 8px;
   border-left: 3px solid #000;
   background: #f9f9f9;
   border-radius: 2px;
