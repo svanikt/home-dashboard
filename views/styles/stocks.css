@@ -34,8 +34,8 @@ body.stocks-layout {
 .vedic-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
+  gap: 6px;
+  padding: 10px;
   border-right: 2px solid #000;
   overflow-y: auto;
 }
@@ -62,7 +62,8 @@ body.stocks-layout {
 }
 
 .birth-chart svg {
-  width: 100%;
+  max-width: 140px;
+  max-height: 140px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -77,7 +78,7 @@ body.stocks-layout {
 .panchang-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
+  gap: 4px;
 }
 
 .panchang-item {
@@ -129,7 +130,7 @@ body.stocks-layout {
 .muhurta-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
+  gap: 4px;
 }
 
 .muhurta-item {
@@ -161,7 +162,7 @@ body.stocks-layout {
 .predictions-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .prediction-item {
