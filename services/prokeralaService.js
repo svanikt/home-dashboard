@@ -396,14 +396,14 @@ class ProkeralaService extends BaseService {
    * @returns {Object} Parsed inauspicious periods
    */
   parseInauspiciousPeriod(data, logger) {
-    if (!data || !data.data) return null;
+    if (!data || !data.data || !data.data.muhurat) return null;
 
-    const periods = data.data;
+    const muhurats = data.data.muhurat;
 
     // Find specific periods by name
-    const rahuKalam = periods.find(p => p.name?.toLowerCase().includes('rahu'));
-    const yamaghanda = periods.find(p => p.name?.toLowerCase().includes('yama'));
-    const gulika = periods.find(p => p.name?.toLowerCase().includes('gulika'));
+    const rahuKalam = muhurats.find(p => p.name?.toLowerCase().includes('rahu'));
+    const yamaghanda = muhurats.find(p => p.name?.toLowerCase().includes('yama'));
+    const gulika = muhurats.find(p => p.name?.toLowerCase().includes('gulika'));
 
     logger.info?.('[Prokerala] Parsed inauspicious periods:', {
       rahuKalam: rahuKalam?.name,
@@ -411,10 +411,17 @@ class ProkeralaService extends BaseService {
       gulika: gulika?.name
     });
 
+    // Each muhurat has a period array, take the first one
+    const formatPeriod = (muhurat) => {
+      if (!muhurat || !muhurat.period || muhurat.period.length === 0) return 'N/A';
+      const p = muhurat.period[0];
+      return `${this.formatTime(p.start)} - ${this.formatTime(p.end)}`;
+    };
+
     return {
-      rahuKalam: rahuKalam ? `${this.formatTime(rahuKalam.start)} - ${this.formatTime(rahuKalam.end)}` : 'N/A',
-      yamaghanda: yamaghanda ? `${this.formatTime(yamaghanda.start)} - ${this.formatTime(yamaghanda.end)}` : 'N/A',
-      gulika: gulika ? `${this.formatTime(gulika.start)} - ${this.formatTime(gulika.end)}` : 'N/A',
+      rahuKalam: formatPeriod(rahuKalam),
+      yamaghanda: formatPeriod(yamaghanda),
+      gulika: formatPeriod(gulika),
     };
   }
 
