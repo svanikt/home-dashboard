@@ -303,16 +303,47 @@ class ProkeralaService extends BaseService {
 
     const p = data.data;
 
-    return {
-      vara: p.nakshatra?.name || p.day || 'N/A',
-      tithi: p.tithi?.name || 'N/A',
-      nakshatra: p.nakshatra?.name || 'N/A',
-      yoga: p.yoga?.name || 'N/A',
-      karana: p.karana?.name || 'N/A',
-      rahuKalam: p.rahu_kalam ? `${p.rahu_kalam.start} - ${p.rahu_kalam.end}` : 'N/A',
-      yamaghanda: p.yamaghanda ? `${p.yamaghanda.start} - ${p.yamaghanda.end}` : 'N/A',
-      gulika: p.gulika ? `${p.gulika.start} - ${p.gulika.end}` : 'N/A',
+    // Panchang items come as arrays - pick the current/first one
+    const getCurrentItem = (arr) => {
+      if (!arr || !Array.isArray(arr) || arr.length === 0) return null;
+      // Find the one that's currently active based on time, or just use first
+      return arr[0];
     };
+
+    const nakshatra = getCurrentItem(p.nakshatra);
+    const tithi = getCurrentItem(p.tithi);
+    const yoga = getCurrentItem(p.yoga);
+    const karana = getCurrentItem(p.karana);
+
+    return {
+      vara: p.vaara || 'N/A',
+      tithi: tithi?.name || 'N/A',
+      nakshatra: nakshatra?.name || 'N/A',
+      yoga: yoga?.name || 'N/A',
+      karana: karana?.name || 'N/A',
+      rahuKalam: p.rahu_kalam ? `${this.formatTime(p.rahu_kalam.start)} - ${this.formatTime(p.rahu_kalam.end)}` : 'N/A',
+      yamaghanda: p.yamaghanda ? `${this.formatTime(p.yamaghanda.start)} - ${this.formatTime(p.yamaghanda.end)}` : 'N/A',
+      gulika: p.gulika ? `${this.formatTime(p.gulika.start)} - ${this.formatTime(p.gulika.end)}` : 'N/A',
+    };
+  }
+
+  /**
+   * Format time string to simpler format
+   * @param {string} timeStr - ISO time string
+   * @returns {string} Formatted time
+   */
+  formatTime(timeStr) {
+    if (!timeStr) return '';
+    try {
+      const date = new Date(timeStr);
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return timeStr;
+    }
   }
 
   /**
