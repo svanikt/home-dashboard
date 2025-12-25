@@ -17,8 +17,7 @@ class VedicAstrologyService extends BaseService {
       retryCooldown: 2000,
     });
     // Use self-hosted Docker instance on localhost (no rate limits!)
-    this.apiBase = process.env.VEDASTRO_API_URL || 'http://localhost:7080/api/Calculate';
-    this.apiKey = process.env.VEDASTRO_API_KEY || 'SelfHosted';
+    this.apiBase = process.env.VEDASTRO_API_URL || 'http://localhost:7080/api';
   }
 
   isEnabled() {
@@ -65,6 +64,24 @@ class VedicAstrologyService extends BaseService {
   }
 
   /**
+   * Parse time string into components for Azure Functions API
+   * Input format: HH:MM/DD/MM/YYYY/TIMEZONE (e.g., 14:30/15/05/1960/+05:30)
+   * @param {string} timeString - Formatted time string
+   * @returns {Object} Time components {hhmm, day, month, year, offset}
+   */
+  parseTimeString(timeString) {
+    const parts = timeString.split('/');
+    const [hours, minutes] = parts[0].split(':');
+    const hhmm = hours + minutes; // e.g., "1430"
+    const day = parts[1];
+    const month = parts[2];
+    const year = parts[3];
+    const offset = parts[4];
+
+    return { hhmm, day, month, year, offset };
+  }
+
+  /**
    * Format current time for VedAstro API
    * Format: HH:MM/DD/MM/YYYY/TIMEZONE
    * @returns {string} Formatted time string
@@ -96,24 +113,10 @@ class VedicAstrologyService extends BaseService {
    */
   async fetchBirthChart(birthTime, birthLocation, logger) {
     try {
-      // Fetch South Indian style D1 (Rasi) chart as SVG
-      const url = `${this.apiBase}/SouthIndianChart/ChartStyle/SouthIndian/DivisionalChart/D1/Location/${birthLocation}/Time/${birthTime}/APIKey/${this.apiKey}`;
-
-      logger.info?.(`[Vedic Astrology] Fetching birth chart`);
-
-      const response = await axios.get(url, {
-        timeout: 15000,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; VedicDashboard/1.0)',
-        },
-      });
-
-      // VedAstro returns {Status: ..., Payload: "SVG content"}
-      if (response.data && response.data.Payload) {
-        logger.info?.(`[Vedic Astrology] Birth chart fetched successfully`);
-        return response.data.Payload;
-      }
-
+      // TODO: Azure Functions chart endpoint requires personId
+      // Endpoint format: api/chart/{personId}/{eventPreset}/{timePreset}
+      // For now, disable birth chart until we figure out how to generate without personId
+      logger.info?.(`[Vedic Astrology] Birth chart temporarily disabled (requires personId)`);
       return null;
     } catch (error) {
       logger.error?.(`[Vedic Astrology] Failed to fetch birth chart:`, error.message);
@@ -130,18 +133,33 @@ class VedicAstrologyService extends BaseService {
    */
   async fetchHoroscopePredictions(birthTime, birthLocation, logger) {
     try {
-      const url = `${this.apiBase}/HoroscopePredictions/Location/${birthLocation}/Time/${birthTime}/APIKey/${this.apiKey}`;
+      const url = `${this.apiBase}/gethoroscope`;
+
+      // Parse time into components
+      const { hhmm, day, month, year, offset } = this.parseTimeString(birthTime);
+
+      const requestBody = {
+        location: birthLocation,
+        time: {
+          hhmm,
+          day,
+          month,
+          year,
+          offset
+        }
+      };
 
       logger.info?.(`[Vedic Astrology] Fetching predictions from: ${url}`);
 
-      const response = await axios.get(url, {
+      const response = await axios.post(url, requestBody, {
         timeout: 15000,
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; VedicDashboard/1.0)',
+          'Content-Type': 'application/json',
         },
       });
 
-      // VedAstro returns XML, parse it
+      // Parse predictions from response
       const predictions = this.parseHoroscopePredictions(response.data);
 
       logger.info?.(`[Vedic Astrology] Found ${predictions.length} predictions`);
@@ -166,10 +184,17 @@ class VedicAstrologyService extends BaseService {
       const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
       const planetData = {};
 
+      // Parse time into components for Azure Functions API
+      const { hhmm, day, month, year, offset } = this.parseTimeString(time);
+
       // Fetch in parallel
       const promises = planets.map(async (planet) => {
         try {
-          const url = `${this.apiBase}/PlanetZodiacSign/PlanetName/${planet}/Location/${location}/Time/${time}/APIKey/${this.apiKey}`;
+          // Azure Functions route: api/Location/{locationName}/Time/{hhmmStr}/{dateStr}/{monthStr}/{yearStr}/{offsetStr}/Planet/{planetNameStr}/{propertyName}
+          const url = `${this.apiBase}/Location/${location}/Time/${hhmm}/${day}/${month}/${year}/${offset}/Planet/${planet}/PlanetZodiacSign`;
+
+          logger.info?.(`[Vedic Astrology] Fetching ${planet} from: ${url}`);
+
           const response = await axios.get(url, {
             timeout: 10000,
             headers: {
@@ -203,23 +228,10 @@ class VedicAstrologyService extends BaseService {
    */
   async fetchCurrentDasha(birthTime, birthLocation, logger) {
     try {
-      const now = new Date();
-      const currentTime = this.formatCurrentTime();
-
-      const url = `${this.apiBase}/CurrentDasa8Levels/Location/${birthLocation}/Time/${birthTime}/TimeNow/${currentTime}/APIKey/${this.apiKey}`;
-
-      const response = await axios.get(url, {
-        timeout: 15000,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; VedicDashboard/1.0)',
-        },
-      });
-
-      const dasha = this.parseDashaData(response.data);
-
-      logger.info?.(`[Vedic Astrology] Current Dasha: ${dasha?.planet || 'Unknown'}`);
-
-      return dasha;
+      // TODO: Need to find correct Dasha endpoint in Azure Functions API
+      // Temporarily disabled until we can confirm the correct endpoint
+      logger.info?.(`[Vedic Astrology] Dasha temporarily disabled (need to find correct endpoint)`);
+      return null;
     } catch (error) {
       logger.error?.(`[Vedic Astrology] Failed to fetch Dasha:`, error.message);
       return null;
