@@ -52,6 +52,16 @@
     <div class="vedic-section">
       <% if (vedicAstrology) { %>
 
+        <!-- Birth Chart SVG -->
+        <% if (vedicAstrology.chartSvg) { %>
+          <div class="birth-chart-container">
+            <div class="vedic-section-title">Rasi Chart</div>
+            <div class="birth-chart">
+              <%- vedicAstrology.chartSvg %>
+            </div>
+          </div>
+        <% } %>
+
         <!-- Panchang (Daily Elements) -->
         <% if (vedicAstrology.panchang) { %>
           <div class="panchang-container">
@@ -105,27 +115,25 @@
           </div>
         <% } %>
 
-        <!-- Daily Insights -->
-        <% if (vedicAstrology.prediction) { %>
+        <!-- Daily Prediction -->
+        <% if (vedicAstrology.prediction && vedicAstrology.prediction.text) { %>
           <div class="vedic-predictions">
-            <div class="vedic-section-title">Daily Insights</div>
+            <div class="vedic-section-title">Daily Prediction</div>
             <div class="predictions-list">
-              <% if (vedicAstrology.prediction.profession) { %>
-                <div class="prediction-item profession">
-                  <div class="prediction-label">Profession</div>
-                  <div class="prediction-text"><%= vedicAstrology.prediction.profession %></div>
-                </div>
-              <% } %>
-              <% if (vedicAstrology.prediction.health) { %>
-                <div class="prediction-item health">
-                  <div class="prediction-label">Health</div>
-                  <div class="prediction-text"><%= vedicAstrology.prediction.health %></div>
-                </div>
-              <% } %>
-              <% if (vedicAstrology.prediction.luck) { %>
-                <div class="prediction-item luck">
-                  <div class="prediction-label">Luck</div>
-                  <div class="prediction-text"><%= vedicAstrology.prediction.luck %></div>
+              <div class="prediction-item general">
+                <div class="prediction-text"><%= vedicAstrology.prediction.text %></div>
+              </div>
+              <% if (vedicAstrology.prediction.mood || vedicAstrology.prediction.luckyColor || vedicAstrology.prediction.luckyNumber) { %>
+                <div class="prediction-extras">
+                  <% if (vedicAstrology.prediction.mood) { %>
+                    <span class="prediction-extra"><strong>Mood:</strong> <%= vedicAstrology.prediction.mood %></span>
+                  <% } %>
+                  <% if (vedicAstrology.prediction.luckyColor) { %>
+                    <span class="prediction-extra"><strong>Lucky Color:</strong> <%= vedicAstrology.prediction.luckyColor %></span>
+                  <% } %>
+                  <% if (vedicAstrology.prediction.luckyNumber) { %>
+                    <span class="prediction-extra"><strong>Lucky Number:</strong> <%= vedicAstrology.prediction.luckyNumber %></span>
+                  <% } %>
                 </div>
               <% } %>
             </div>

@@ -49,6 +49,28 @@ body.stocks-layout {
   letter-spacing: 0.5px;
 }
 
+/* Birth Chart */
+.birth-chart-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.birth-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 4px;
+}
+
+.birth-chart svg {
+  max-width: 100%;
+  height: auto;
+  max-height: 120px;
+}
+
 /* Panchang */
 .panchang-container {
   display: flex;
@@ -188,6 +210,25 @@ body.stocks-layout {
   font-size: 10px;
   line-height: 1.4;
   color: #333;
+}
+
+.prediction-extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #eee;
+}
+
+.prediction-extra {
+  font-size: 9px;
+  color: #666;
+}
+
+.prediction-extra strong {
+  color: #000;
+  font-weight: 600;
 }
 
 /* Vedic Unavailable */
