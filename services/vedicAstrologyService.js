@@ -71,13 +71,11 @@ class VedicAstrologyService extends BaseService {
    */
   parseTimeString(timeString) {
     const parts = timeString.split('/');
-    const [hours, minutes] = parts[0].split(':');
-    const hhmm = hours + minutes; // e.g., "1430"
+    const hhmm = parts[0]; // Keep as HH:MM format e.g., "14:30"
     const day = parts[1];
     const month = parts[2];
     const year = parts[3];
-    // Remove colon from offset: +05:30 -> +0530
-    const offset = parts[4].replace(':', '');
+    const offset = parts[4]; // Keep colon: +05:30
 
     return { hhmm, day, month, year, offset };
   }
