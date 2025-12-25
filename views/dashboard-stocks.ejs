@@ -42,7 +42,8 @@
 
   <!-- Date Header (Full width) -->
   <div class="page-header">
-    <%= formatDate(date, timezone) %>
+    <div><%= formatDate(date, timezone) %></div>
+    <div>Updated <%= last_updated %></div>
   </div>
 
   <!-- Main Content: Two Column Layout -->
@@ -182,16 +183,6 @@
       <% } %>
     </div>
 
-  </div>
-
-  <!-- Footer -->
-  <div class="footer-info">
-    <% if (battery_level !== null) { %>
-      <div>Battery <%= battery_level %>%</div>
-    <% } else { %>
-      <div></div>
-    <% } %>
-    <div>Updated <%= last_updated %></div>
   </div>
 
 </body>
