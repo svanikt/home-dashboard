@@ -57,7 +57,6 @@ router.get('/dashboard/:dashboardId', validateDashboard, async (req, res) => {
     const dashboardConfig = req.dashboardConfig;
     const forceRefresh = req.query.refresh === 'true';
     const data = await buildDashboardData(req.params.dashboardId, req, console, forceRefresh);
-    data.isDevelopment = true;
 
     // Parse battery level from query param (0-100) if provided
     const batteryParam = req.query.battery;
