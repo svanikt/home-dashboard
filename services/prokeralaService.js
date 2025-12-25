@@ -107,15 +107,22 @@ class ProkeralaService extends BaseService {
     const coordinates = `${latitude},${longitude}`;
 
     // Fetch multiple data points in parallel
-    const [panchang, kundli, dailyHoroscope, chart] = await Promise.all([
+    const [panchang, inauspicious, kundli, dailyHoroscope, chart] = await Promise.all([
       this.fetchPanchang(datetime, coordinates, timezone, token, logger),
+      this.fetchInauspiciousPeriod(datetime, coordinates, timezone, token, logger),
       this.fetchKundli(datetime, coordinates, timezone, token, logger),
       this.fetchDailyHoroscope(datetime, coordinates, timezone, token, logger),
       this.fetchChart(datetime, coordinates, timezone, token, logger),
     ]);
 
+    // Merge inauspicious times into panchang
+    const completePanchang = {
+      ...panchang,
+      ...(inauspicious || {}),
+    };
+
     return {
-      panchang,
+      panchang: completePanchang,
       kundli,
       dailyHoroscope,
       chart,
@@ -165,6 +172,54 @@ class ProkeralaService extends BaseService {
       logger.error?.('[Prokerala] Failed to fetch Panchang:', error.message);
       if (error.response) {
         logger.error?.('[Prokerala] Panchang error details:', JSON.stringify(error.response.data));
+      }
+      return null;
+    }
+  }
+
+  /**
+   * Fetch Inauspicious Period (Rahu Kalam, Yamaghanda, Gulika)
+   * @param {string} datetime - ISO datetime
+   * @param {string} coordinates - lat,lon
+   * @param {string} timezone - Timezone identifier
+   * @param {string} token - Access token
+   * @param {Object} logger - Logger instance
+   * @returns {Promise<Object>} Inauspicious periods data
+   */
+  async fetchInauspiciousPeriod(datetime, coordinates, timezone, token, logger) {
+    try {
+      // Use today's date for inauspicious periods with timezone offset
+      const now = new Date();
+      const tzHours = Math.floor(Math.abs(timezone));
+      const tzMinutes = Math.round((Math.abs(timezone) - tzHours) * 60);
+      const tzSign = timezone >= 0 ? '+' : '-';
+      const tzOffset = `${tzSign}${String(tzHours).padStart(2, '0')}:${String(tzMinutes).padStart(2, '0')}`;
+      const todayDatetime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00${tzOffset}`;
+
+      logger.info?.('[Prokerala] Fetching Inauspicious Period');
+
+      const response = await axios.get(
+        `${this.apiBase}/astrology/inauspicious-period`,
+        {
+          params: {
+            ayanamsa: 1, // Lahiri
+            coordinates,
+            datetime: todayDatetime,
+            la: 'en',
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          timeout: 15000,
+        }
+      );
+
+      logger.info?.('[Prokerala] Inauspicious Period response:', JSON.stringify(response.data));
+      return this.parseInauspiciousPeriod(response.data, logger);
+    } catch (error) {
+      logger.error?.('[Prokerala] Failed to fetch Inauspicious Period:', error.message);
+      if (error.response) {
+        logger.error?.('[Prokerala] Inauspicious Period error details:', JSON.stringify(error.response.data));
       }
       return null;
     }
@@ -286,9 +341,18 @@ class ProkeralaService extends BaseService {
       );
 
       // API returns SVG directly or in data.svg
-      return response.data.svg || response.data || null;
+      const chartData = response.data.svg || response.data || null;
+      if (chartData) {
+        logger.info?.('[Prokerala] Chart fetched successfully, length:', chartData.length);
+      } else {
+        logger.warn?.('[Prokerala] Chart data is empty or null');
+      }
+      return chartData;
     } catch (error) {
       logger.error?.('[Prokerala] Failed to fetch chart:', error.message);
+      if (error.response) {
+        logger.error?.('[Prokerala] Chart error details:', JSON.stringify(error.response.data));
+      }
       return null;
     }
   }
@@ -316,23 +380,41 @@ class ProkeralaService extends BaseService {
     const yoga = getCurrentItem(p.yoga);
     const karana = getCurrentItem(p.karana);
 
-    // Log muhurta times for debugging
-    logger.info?.('[Prokerala] Muhurta times debug:', JSON.stringify({
-      rahu_kalam: p.rahu_kalam,
-      yamaghanda: p.yamaghanda,
-      gulika: p.gulika,
-      availableKeys: Object.keys(p)
-    }));
-
     return {
       vara: p.vaara || 'N/A',
       tithi: tithi?.name || 'N/A',
       nakshatra: nakshatra?.name || 'N/A',
       yoga: yoga?.name || 'N/A',
       karana: karana?.name || 'N/A',
-      rahuKalam: p.rahu_kalam ? `${this.formatTime(p.rahu_kalam.start)} - ${this.formatTime(p.rahu_kalam.end)}` : 'N/A',
-      yamaghanda: p.yamaghanda ? `${this.formatTime(p.yamaghanda.start)} - ${this.formatTime(p.yamaghanda.end)}` : 'N/A',
-      gulika: p.gulika ? `${this.formatTime(p.gulika.start)} - ${this.formatTime(p.gulika.end)}` : 'N/A',
+    };
+  }
+
+  /**
+   * Parse Inauspicious Period response
+   * @param {Object} data - API response
+   * @param {Object} logger - Logger instance
+   * @returns {Object} Parsed inauspicious periods
+   */
+  parseInauspiciousPeriod(data, logger) {
+    if (!data || !data.data) return null;
+
+    const periods = data.data;
+
+    // Find specific periods by name
+    const rahuKalam = periods.find(p => p.name?.toLowerCase().includes('rahu'));
+    const yamaghanda = periods.find(p => p.name?.toLowerCase().includes('yama'));
+    const gulika = periods.find(p => p.name?.toLowerCase().includes('gulika'));
+
+    logger.info?.('[Prokerala] Parsed inauspicious periods:', {
+      rahuKalam: rahuKalam?.name,
+      yamaghanda: yamaghanda?.name,
+      gulika: gulika?.name
+    });
+
+    return {
+      rahuKalam: rahuKalam ? `${this.formatTime(rahuKalam.start)} - ${this.formatTime(rahuKalam.end)}` : 'N/A',
+      yamaghanda: yamaghanda ? `${this.formatTime(yamaghanda.start)} - ${this.formatTime(yamaghanda.end)}` : 'N/A',
+      gulika: gulika ? `${this.formatTime(gulika.start)} - ${this.formatTime(gulika.end)}` : 'N/A',
     };
   }
 
