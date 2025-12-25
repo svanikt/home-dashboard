@@ -76,7 +76,8 @@ class VedicAstrologyService extends BaseService {
     const day = parts[1];
     const month = parts[2];
     const year = parts[3];
-    const offset = parts[4];
+    // Remove colon from offset: +05:30 -> +0530
+    const offset = parts[4].replace(':', '');
 
     return { hhmm, day, month, year, offset };
   }
