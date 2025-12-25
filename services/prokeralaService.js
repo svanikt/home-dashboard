@@ -87,7 +87,7 @@ class ProkeralaService extends BaseService {
       timezone
     } = config;
 
-    if (!day || !month || !year || !hour || !minute || !latitude || !longitude) {
+    if (day == null || month == null || year == null || hour == null || minute == null || latitude == null || longitude == null) {
       throw new Error('Complete birth details required for Prokerala API');
     }
 
