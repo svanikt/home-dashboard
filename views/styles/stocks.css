@@ -34,79 +34,141 @@ body.stocks-layout {
 .vedic-section {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
   padding: 15px;
   border-right: 2px solid #000;
   overflow-y: auto;
 }
 
 .vedic-section-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   color: #666;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+/* Birth Chart */
+.birth-chart-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.birth-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 4px;
+}
+
+.birth-chart svg {
+  max-width: 100%;
+  height: auto;
+  max-height: 140px;
 }
 
 /* Dasha Section */
 .vedic-dasha {
-  padding: 12px;
   background: #f5f5f5;
   border: 2px solid #000;
   border-radius: 4px;
 }
 
+.dasha-content {
+  padding: 10px 12px;
+}
+
 .dasha-planet {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   color: #000;
-  margin-top: 5px;
 }
 
 .dasha-ends {
-  font-size: 11px;
+  font-size: 10px;
   color: #666;
   margin-top: 4px;
+}
+
+/* Planetary Positions */
+.planetary-positions {
+  display: flex;
+  flex-direction: column;
+}
+
+.planets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.planet-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 10px;
+}
+
+.planet-name {
+  font-weight: 600;
+  color: #000;
+}
+
+.planet-sign {
+  color: #666;
+  font-size: 9px;
 }
 
 /* Predictions Section */
 .vedic-predictions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+}
+
+.predictions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .prediction-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: 11px;
-  line-height: 1.4;
+  padding: 8px 10px;
+  border-left: 3px solid #000;
+  background: #f9f9f9;
+  border-radius: 2px;
 }
 
-.prediction-category {
-  font-size: 14px;
-  flex-shrink: 0;
-  margin-top: 2px;
+.prediction-item.financial {
+  border-left-color: #2d5016;
+  background: #f0f5ed;
 }
 
-.prediction-category.financial {
-  color: #2d5016;
+.prediction-item.health {
+  border-left-color: #8b0000;
+  background: #fef0f0;
 }
 
-.prediction-category.health {
-  color: #8b0000;
+.prediction-item.relationship {
+  border-left-color: #4b0082;
+  background: #f5f0f9;
 }
 
-.prediction-category.relationship {
-  color: #4b0082;
-}
-
-.prediction-category.general {
-  color: #000;
+.prediction-item.general {
+  border-left-color: #000;
+  background: #f9f9f9;
 }
 
 .prediction-text {
+  font-size: 10px;
+  line-height: 1.5;
   color: #333;
 }
 

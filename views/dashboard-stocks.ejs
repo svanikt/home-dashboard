@@ -50,29 +50,59 @@
 
     <!-- Vedic Astrology Section (Left) -->
     <div class="vedic-section">
-      <% if (vedicAstrology && vedicAstrology.currentDasha) { %>
-        <!-- Current Dasha -->
-        <div class="vedic-dasha">
-          <div class="vedic-section-title">Current Dasha</div>
-          <div class="dasha-planet"><%= vedicAstrology.currentDasha.planet %></div>
-          <div class="dasha-ends">Until <%= vedicAstrology.currentDasha.endsOn %></div>
-        </div>
-      <% } %>
+      <% if (vedicAstrology) { %>
 
-      <% if (vedicAstrology && vedicAstrology.predictions && vedicAstrology.predictions.length > 0) { %>
-        <!-- Daily Predictions -->
-        <div class="vedic-predictions">
-          <div class="vedic-section-title">Daily Insights</div>
-          <% vedicAstrology.predictions.slice(0, 3).forEach(prediction => { %>
-            <div class="prediction-item">
-              <span class="prediction-category <%= prediction.category %>">●</span>
-              <span class="prediction-text"><%= prediction.text %></span>
+        <!-- Birth Chart -->
+        <% if (vedicAstrology.chartSvg) { %>
+          <div class="birth-chart-container">
+            <div class="vedic-section-title">Rasi Chart (D1)</div>
+            <div class="birth-chart">
+              <%- vedicAstrology.chartSvg %>
             </div>
-          <% }) %>
-        </div>
-      <% } %>
+          </div>
+        <% } %>
 
-      <% if (!vedicAstrology) { %>
+        <!-- Current Dasha -->
+        <% if (vedicAstrology.currentDasha) { %>
+          <div class="vedic-dasha">
+            <div class="vedic-section-title">Current Mahadasha</div>
+            <div class="dasha-content">
+              <div class="dasha-planet"><%= vedicAstrology.currentDasha.planet %></div>
+              <div class="dasha-ends">Until <%= vedicAstrology.currentDasha.endsOn %></div>
+            </div>
+          </div>
+        <% } %>
+
+        <!-- Planetary Positions -->
+        <% if (vedicAstrology.planets && Object.keys(vedicAstrology.planets).length > 0) { %>
+          <div class="planetary-positions">
+            <div class="vedic-section-title">Current Transits</div>
+            <div class="planets-grid">
+              <% Object.entries(vedicAstrology.planets).forEach(([planet, data]) => { %>
+                <div class="planet-item">
+                  <span class="planet-name"><%= planet %></span>
+                  <span class="planet-sign"><%= data.sign || 'N/A' %></span>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        <% } %>
+
+        <!-- Daily Insights -->
+        <% if (vedicAstrology.predictions && vedicAstrology.predictions.length > 0) { %>
+          <div class="vedic-predictions">
+            <div class="vedic-section-title">Horoscope Predictions</div>
+            <div class="predictions-list">
+              <% vedicAstrology.predictions.slice(0, 4).forEach(prediction => { %>
+                <div class="prediction-item <%= prediction.category %>">
+                  <div class="prediction-text"><%= prediction.text %></div>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        <% } %>
+
+      <% } else { %>
         <div class="vedic-unavailable">
           <p>Vedic astrology data unavailable</p>
           <p class="vedic-hint">Configure birth details in dashboard config</p>

@@ -40,6 +40,9 @@ class VedicAstrologyService extends BaseService {
 
     logger.info?.(`[Vedic Astrology] Fetching data for birth: ${birthTime} at ${birthLocation}`);
 
+    // Fetch birth chart SVG
+    const chartSvg = await this.fetchBirthChart(birthTime, birthLocation, logger);
+
     // Fetch horoscope predictions
     const predictions = await this.fetchHoroscopePredictions(birthTime, birthLocation, logger);
 
@@ -51,6 +54,7 @@ class VedicAstrologyService extends BaseService {
     const dasha = await this.fetchCurrentDasha(birthTime, birthLocation, logger);
 
     return {
+      chartSvg: chartSvg || null,
       predictions: predictions || [],
       planets: planets || {},
       dasha: dasha || null,
@@ -80,6 +84,40 @@ class VedicAstrologyService extends BaseService {
     const timezone = `${offsetSign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`;
 
     return `${hours}:${minutes}/${day}/${month}/${year}/${timezone}`;
+  }
+
+  /**
+   * Fetch birth chart as SVG
+   * @param {string} birthTime - Format: HH:MM/DD/MM/YYYY/TIMEZONE
+   * @param {string} birthLocation - Format: latitude,longitude
+   * @param {Object} logger - Logger instance
+   * @returns {Promise<string|null>} SVG chart data
+   */
+  async fetchBirthChart(birthTime, birthLocation, logger) {
+    try {
+      // Fetch South Indian style D1 (Rasi) chart as SVG
+      const url = `${this.apiBase}/SouthIndianChart/ChartStyle/SouthIndian/DivisionalChart/D1/Location/${birthLocation}/Time/${birthTime}/APIKey/${this.apiKey}`;
+
+      logger.info?.(`[Vedic Astrology] Fetching birth chart`);
+
+      const response = await axios.get(url, {
+        timeout: 15000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; VedicDashboard/1.0)',
+        },
+      });
+
+      // VedAstro returns {Status: ..., Payload: "SVG content"}
+      if (response.data && response.data.Payload) {
+        logger.info?.(`[Vedic Astrology] Birth chart fetched successfully`);
+        return response.data.Payload;
+      }
+
+      return null;
+    } catch (error) {
+      logger.error?.(`[Vedic Astrology] Failed to fetch birth chart:`, error.message);
+      return null;
+    }
   }
 
   /**
@@ -284,6 +322,7 @@ class VedicAstrologyService extends BaseService {
    */
   mapToDashboard(apiData, config) {
     return {
+      chartSvg: apiData.chartSvg || null,
       predictions: (apiData.predictions || []).map(p => ({
         text: p.text,
         category: p.category,
