@@ -97,7 +97,13 @@ class ProkeralaService extends BaseService {
     const token = await this.getAccessToken(logger);
 
     // Prepare datetime and location for API calls
-    const datetime = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`;
+    // Format timezone offset: 5.5 -> +05:30, -5 -> -05:00
+    const tzHours = Math.floor(Math.abs(timezone));
+    const tzMinutes = Math.round((Math.abs(timezone) - tzHours) * 60);
+    const tzSign = timezone >= 0 ? '+' : '-';
+    const tzOffset = `${tzSign}${String(tzHours).padStart(2, '0')}:${String(tzMinutes).padStart(2, '0')}`;
+
+    const datetime = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00${tzOffset}`;
     const coordinates = `${latitude},${longitude}`;
 
     // Fetch multiple data points in parallel
@@ -127,9 +133,13 @@ class ProkeralaService extends BaseService {
    */
   async fetchPanchang(datetime, coordinates, timezone, token, logger) {
     try {
-      // Use today's date for Panchang
+      // Use today's date for Panchang with timezone offset
       const now = new Date();
-      const todayDatetime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`;
+      const tzHours = Math.floor(Math.abs(timezone));
+      const tzMinutes = Math.round((Math.abs(timezone) - tzHours) * 60);
+      const tzSign = timezone >= 0 ? '+' : '-';
+      const tzOffset = `${tzSign}${String(tzHours).padStart(2, '0')}:${String(tzMinutes).padStart(2, '0')}`;
+      const todayDatetime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00${tzOffset}`;
 
       logger.info?.('[Prokerala] Fetching Panchang');
 
@@ -209,9 +219,13 @@ class ProkeralaService extends BaseService {
    */
   async fetchDailyHoroscope(datetime, coordinates, timezone, token, logger) {
     try {
-      // Use today's date for daily horoscope
+      // Use today's date for daily horoscope with timezone offset
       const now = new Date();
-      const todayDatetime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00`;
+      const tzHours = Math.floor(Math.abs(timezone));
+      const tzMinutes = Math.round((Math.abs(timezone) - tzHours) * 60);
+      const tzSign = timezone >= 0 ? '+' : '-';
+      const tzOffset = `${tzSign}${String(tzHours).padStart(2, '0')}:${String(tzMinutes).padStart(2, '0')}`;
+      const todayDatetime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:00${tzOffset}`;
 
       logger.info?.('[Prokerala] Fetching daily horoscope');
 
