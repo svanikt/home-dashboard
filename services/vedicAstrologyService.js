@@ -193,7 +193,7 @@ class VedicAstrologyService extends BaseService {
       const promises = planets.map(async (planet) => {
         try {
           // Azure Functions route: api/Location/{locationName}/Time/{hhmmStr}/{dateStr}/{monthStr}/{yearStr}/{offsetStr}/Planet/{planetNameStr}/{propertyName}
-          const url = `${this.apiBase}/Location/${location}/Time/${hhmm}/${day}/${month}/${year}/${encodedOffset}/Planet/${planet}/PlanetZodiacSign`;
+          const url = `${this.apiBase}/Location/${location}/Time/${hhmm}/${day}/${month}/${year}/${encodedOffset}/Planet/${planet}/Sign`;
 
           logger.info?.(`[Vedic Astrology] Fetching ${planet} from: ${url}`);
 
@@ -204,7 +204,7 @@ class VedicAstrologyService extends BaseService {
             },
           });
 
-          planetData[planet] = this.parsePlanetData(response.data);
+          planetData[planet] = this.parsePlanetData(response.data, planet);
         } catch (error) {
           logger.warn?.(`[Vedic Astrology] Failed to fetch ${planet}:`, error.message);
         }
@@ -288,20 +288,26 @@ class VedicAstrologyService extends BaseService {
   }
 
   /**
-   * Parse planet data from JSON response
-   * @param {Object} data - JSON response from VedAstro API
+   * Parse planet data from XML response
+   * @param {string} data - XML response from VedAstro API
+   * @param {string} planetName - Name of the planet
    * @returns {Object} Parsed planet data
    */
-  parsePlanetData(data) {
+  parsePlanetData(data, planetName) {
     const planetInfo = {};
 
     try {
-      // VedAstro returns {Status: ..., Payload: {Name: "Aries", ...}}
-      if (data && data.Payload) {
-        planetInfo.sign = data.Payload.Name || data.Payload;
+      // VedAstro returns XML: <Root><Status>Pass</Status><Payload>Sagittarius : 11°26'24"</Payload></Root>
+      // Extract just the sign name (before the colon and degrees)
+      const payloadMatch = data.match(/<Payload>(.*?)<\/Payload>/);
+      if (payloadMatch && payloadMatch[1]) {
+        const fullSign = payloadMatch[1].trim();
+        // Extract just the sign name (e.g., "Sagittarius" from "Sagittarius : 11°26'24"")
+        const signName = fullSign.split(':')[0].trim();
+        planetInfo.sign = signName;
       }
     } catch (error) {
-      console.error('[Vedic Astrology] Error parsing planet data:', error.message);
+      console.error(`[Vedic Astrology] Error parsing ${planetName} data:`, error.message);
     }
 
     return planetInfo;
