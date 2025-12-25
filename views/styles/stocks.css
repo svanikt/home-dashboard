@@ -62,8 +62,8 @@ body.stocks-layout {
 }
 
 .birth-chart svg {
-  max-width: 140px;
-  max-height: 140px;
+  max-width: 220px;
+  max-height: 220px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -230,8 +230,8 @@ body.stocks-layout {
 .stocks-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 15px;
+  gap: 8px;
+  padding: 10px;
   overflow-y: auto;
 }
 
@@ -291,11 +291,11 @@ body.stocks-layout {
 .stock-card {
   border: 2px solid #000;
   border-radius: 4px;
-  padding: 8px;
+  padding: 6px;
   background: #fff;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .stock-header {

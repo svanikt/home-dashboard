@@ -150,33 +150,6 @@
 
     <!-- Stocks Section (Right) -->
     <div class="stocks-section">
-      <!-- Market Summary -->
-      <% if (marketSummary && marketSummary.totalStocks > 0) { %>
-      <div class="market-summary">
-        <div class="summary-item">
-          <span class="summary-label">Total</span>
-          <span class="summary-value"><%= marketSummary.totalStocks %></span>
-        </div>
-        <div class="summary-divider">|</div>
-        <div class="summary-item">
-          <span class="summary-label">Gainers</span>
-          <span class="summary-value summary-gain"><%= marketSummary.gainers %></span>
-        </div>
-        <div class="summary-divider">|</div>
-        <div class="summary-item">
-          <span class="summary-label">Losers</span>
-          <span class="summary-value summary-loss"><%= marketSummary.losers %></span>
-        </div>
-        <div class="summary-divider">|</div>
-        <div class="summary-item">
-          <span class="summary-label">Avg</span>
-          <span class="summary-value <%= parseFloat(marketSummary.avgChange) >= 0 ? 'summary-gain' : 'summary-loss' %>">
-            <%= marketSummary.avgChange %>%
-          </span>
-        </div>
-      </div>
-      <% } %>
-
       <!-- Stock Cards -->
       <% if (stocks && stocks.length > 0) { %>
       <div class="stocks-grid">
@@ -194,31 +167,10 @@
               <%= stock.changePercent %>
             </div>
           </div>
-          <div class="stock-name"><%= stock.name %></div>
           <div class="stock-price-row">
             <div class="stock-price">$<%= stock.price %></div>
             <div class="stock-change-abs <%= stock.direction %>"><%= stock.change %></div>
           </div>
-          <% if (stock.sparkline && stock.sparkline.length > 0) { %>
-          <div class="stock-sparkline">
-            <%
-              // Generate simple ASCII sparkline
-              const prices = stock.sparkline.map(s => s.price).filter(p => p != null);
-              if (prices.length > 0) {
-                const min = Math.min(...prices);
-                const max = Math.max(...prices);
-                const range = max - min || 1;
-                const bars = '▁▂▃▄▅▆▇█';
-                const sparkline = prices.map(p => {
-                  const normalized = (p - min) / range;
-                  const index = Math.min(Math.floor(normalized * bars.length), bars.length - 1);
-                  return bars[index];
-                }).join('');
-            %>
-            <%= sparkline %>
-            <% } %>
-          </div>
-          <% } %>
         </div>
         <% }) %>
       </div>
