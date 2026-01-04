@@ -309,52 +309,62 @@ class ProkeralaService extends BaseService {
   }
 
   /**
-   * Fetch birth chart SVG
+   * Fetch birth chart SVG (using local Swiss Ephemeris calculation)
    * @param {string} datetime - ISO datetime
    * @param {string} coordinates - lat,lon
-   * @param {string} timezone - Timezone identifier
-   * @param {string} token - Access token
+   * @param {number} timezone - Timezone offset in hours
+   * @param {string} token - Access token (not used for local generation)
    * @param {Object} logger - Logger instance
    * @returns {Promise<string>} SVG chart
    */
   async fetchChart(datetime, coordinates, timezone, token, logger) {
+    // Use VedicChartService for local North Indian chart generation
+    const vedicChartService = require('./vedicChartService');
+
     try {
-      logger.info?.('[Prokerala] Fetching chart');
+      logger.info?.('[Prokerala] Generating local North Indian chart');
 
-      const response = await axios.get(
-        `${this.apiBase}/astrology/chart`,
-        {
-          params: {
-            ayanamsa: 1,
-            coordinates,
-            datetime,
-            chart_type: 'rasi', // South Indian style
-            chart_style: 'south-indian',
-            format: 'svg',
-            la: 'en',
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          timeout: 15000,
-        }
-      );
+      // Parse birth details from parameters
+      const birthDetails = this.parseBirthDetails(datetime, coordinates, timezone);
 
-      // API returns SVG directly or in data.svg
-      const chartData = response.data.svg || response.data || null;
-      if (chartData) {
-        logger.info?.('[Prokerala] Chart fetched successfully, length:', chartData.length);
+      // Generate chart using Swiss Ephemeris
+      const chartSvg = vedicChartService.generateChart(birthDetails, logger);
+
+      if (chartSvg) {
+        logger.info?.('[Prokerala] Chart generated successfully, length:', chartSvg.length);
       } else {
-        logger.warn?.('[Prokerala] Chart data is empty or null');
+        logger.warn?.('[Prokerala] Chart generation returned null');
       }
-      return chartData;
+
+      return chartSvg;
     } catch (error) {
-      logger.error?.('[Prokerala] Failed to fetch chart:', error.message);
-      if (error.response) {
-        logger.error?.('[Prokerala] Chart error details:', JSON.stringify(error.response.data));
-      }
+      logger.error?.('[Prokerala] Failed to generate chart:', error.message);
       return null;
     }
+  }
+
+  /**
+   * Parse birth details from API parameters
+   * @param {string} datetime - ISO datetime string
+   * @param {string} coordinates - Coordinates as "lat,lon"
+   * @param {number} timezone - Timezone offset in hours
+   * @returns {Object} Birth details object
+   */
+  parseBirthDetails(datetime, coordinates, timezone) {
+    // Parse ISO datetime: "1990-05-15T14:30:00+05:30"
+    const date = new Date(datetime);
+    const [lat, lon] = coordinates.split(',').map(parseFloat);
+
+    return {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,  // JavaScript months are 0-indexed
+      day: date.getDate(),
+      hour: date.getHours(),
+      minute: date.getMinutes(),
+      latitude: lat,
+      longitude: lon,
+      timezone: timezone
+    };
   }
 
   /**
