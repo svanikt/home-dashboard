@@ -180,12 +180,21 @@ class VedicChartService {
         flags
       );
 
+      // Debug: log the result structure
+      logger.info?.(`[VedicChartService] ${planet.name} result:`, JSON.stringify(result));
+
       if (result.error) {
         logger.warn?.(`[VedicChartService] Error calculating ${planet.name}:`, result.error);
         return null;
       }
 
-      const longitude = result.longitude;
+      // sweph returns longitude in result[0] or result.data[0]
+      const longitude = result[0] || result.longitude || result.data?.[0];
+      if (longitude == null) {
+        logger.error?.(`[VedicChartService] No longitude found for ${planet.name}, result:`, result);
+        return null;
+      }
+
       const sign = longitudeToSign(longitude);
       const abbr = getPlanetAbbr(planet.name);
 
@@ -231,7 +240,16 @@ class VedicChartService {
     // Alternative: 'W' for Whole Sign houses (traditional Vedic)
     const houses = this.sweph.houses(jd, latitude, longitude, 'W');
 
-    const ascendantLongitude = houses.ascendant;
+    // Debug: log the houses structure
+    logger.info?.(`[VedicChartService] Houses result:`, JSON.stringify(houses));
+
+    // sweph houses might return ascendant in houses[0] or houses.ascendant
+    const ascendantLongitude = houses.ascendant || houses[0];
+    if (ascendantLongitude == null) {
+      logger.error?.(`[VedicChartService] No ascendant found, houses:`, houses);
+      return { longitude: 0, sign: 1 }; // Default fallback
+    }
+
     const ascendantSign = longitudeToSign(ascendantLongitude);
 
     logger.debug?.(`[VedicChartService] Ascendant: ${ascendantLongitude.toFixed(2)}° in sign ${ascendantSign}`);
