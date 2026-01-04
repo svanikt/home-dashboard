@@ -46,7 +46,8 @@ class VedicChartService {
       this.sweph.set_ephe_path(ephePath);
 
       // Set Lahiri ayanamsa (standard in Vedic astrology)
-      this.sweph.set_sid_mode(this.sweph.SE_SIDM_LAHIRI, 0, 0);
+      // SE_SIDM_LAHIRI = 1
+      this.sweph.set_sid_mode(1, 0, 0);
 
       this.enabled = true;
       console.log('[VedicChartService] Initialized successfully with Lahiri ayanamsa');
@@ -140,12 +141,13 @@ class VedicChartService {
     const utHour = hour + (minute / 60.0) - timezone;
 
     // Calculate Julian Day
+    // SE_GREG_CAL = 1 (Gregorian calendar)
     return this.sweph.julday(
       year,
       month,
       day,
       utHour,
-      this.sweph.SE_GREG_CAL
+      1
     );
   }
 
@@ -156,22 +158,26 @@ class VedicChartService {
    * @returns {Array} Array of planet objects with positions
    */
   calculatePlanetaryPositions(jd, logger) {
+    // Planet IDs: Sun=0, Moon=1, Mercury=2, Venus=3, Mars=4, Jupiter=5, Saturn=6, Mean Node=10
     const planetDefs = [
-      { id: this.sweph.SE_SUN, name: 'Sun' },
-      { id: this.sweph.SE_MOON, name: 'Moon' },
-      { id: this.sweph.SE_MARS, name: 'Mars' },
-      { id: this.sweph.SE_MERCURY, name: 'Mercury' },
-      { id: this.sweph.SE_JUPITER, name: 'Jupiter' },
-      { id: this.sweph.SE_VENUS, name: 'Venus' },
-      { id: this.sweph.SE_SATURN, name: 'Saturn' },
-      { id: this.sweph.SE_MEAN_NODE, name: 'Rahu' }
+      { id: 0, name: 'Sun' },
+      { id: 1, name: 'Moon' },
+      { id: 4, name: 'Mars' },
+      { id: 2, name: 'Mercury' },
+      { id: 5, name: 'Jupiter' },
+      { id: 3, name: 'Venus' },
+      { id: 6, name: 'Saturn' },
+      { id: 10, name: 'Rahu' }
     ];
+
+    // SEFLG_SIDEREAL = 65536, SEFLG_SPEED = 256
+    const flags = 65536 | 256; // Sidereal + Speed
 
     const planets = planetDefs.map(planet => {
       const result = this.sweph.calc_ut(
         jd,
         planet.id,
-        this.sweph.SEFLG_SIDEREAL | this.sweph.SEFLG_SPEED
+        flags
       );
 
       if (result.error) {
