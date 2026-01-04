@@ -42,11 +42,11 @@ class VedicChartService {
         return;
       }
 
-      // Set ephemeris path
-      this.sweph.swe_set_ephe_path(ephePath);
+      // Set ephemeris path (sweph uses simplified API without swe_ prefix)
+      this.sweph.set_ephe_path(ephePath);
 
       // Set Lahiri ayanamsa (standard in Vedic astrology)
-      this.sweph.swe_set_sid_mode(this.sweph.SE_SIDM_LAHIRI, 0, 0);
+      this.sweph.set_sid_mode(this.sweph.SE_SIDM_LAHIRI, 0, 0);
 
       this.enabled = true;
       console.log('[VedicChartService] Initialized successfully with Lahiri ayanamsa');
@@ -140,7 +140,7 @@ class VedicChartService {
     const utHour = hour + (minute / 60.0) - timezone;
 
     // Calculate Julian Day
-    return this.sweph.swe_julday(
+    return this.sweph.julday(
       year,
       month,
       day,
@@ -168,7 +168,7 @@ class VedicChartService {
     ];
 
     const planets = planetDefs.map(planet => {
-      const result = this.sweph.swe_calc_ut(
+      const result = this.sweph.calc_ut(
         jd,
         planet.id,
         this.sweph.SEFLG_SIDEREAL | this.sweph.SEFLG_SPEED
@@ -223,7 +223,7 @@ class VedicChartService {
   calculateAscendant(jd, latitude, longitude, logger) {
     // Calculate houses using Placidus system ('P')
     // Alternative: 'W' for Whole Sign houses (traditional Vedic)
-    const houses = this.sweph.swe_houses(jd, latitude, longitude, 'W');
+    const houses = this.sweph.houses(jd, latitude, longitude, 'W');
 
     const ascendantLongitude = houses.ascendant;
     const ascendantSign = longitudeToSign(ascendantLongitude);
