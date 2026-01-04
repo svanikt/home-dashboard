@@ -38,7 +38,8 @@ body.stocks-layout {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 15px;
+  padding: 8px;
+  height: 100%;
 }
 
 /* Vedic Astrology Section (Middle) */
@@ -66,12 +67,14 @@ body.stocks-layout {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100%;
+  width: 100%;
 }
 
 .birth-chart svg {
-  width: 100%;
-  max-width: 700px;
-  height: auto;
+  width: auto;
+  height: 100%;
+  max-height: 450px;
   display: block;
 }
 
