@@ -243,8 +243,8 @@ class VedicChartService {
     // Debug: log the houses structure
     logger.info?.(`[VedicChartService] Houses result:`, JSON.stringify(houses));
 
-    // sweph houses might return ascendant in houses[0] or houses.ascendant
-    const ascendantLongitude = houses.ascendant || houses[0];
+    // sweph houses returns ascendant in houses.data.points[0]
+    const ascendantLongitude = houses.data?.points?.[0];
     if (ascendantLongitude == null) {
       logger.error?.(`[VedicChartService] No ascendant found, houses:`, houses);
       return { longitude: 0, sign: 1 }; // Default fallback
