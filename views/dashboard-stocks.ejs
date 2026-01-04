@@ -63,8 +63,8 @@
       <% if (vedicAstrology) { %>
 
         <!-- Panchang (Daily Elements) - TEMPORARILY HIDDEN -->
-        <%# if (vedicAstrology.panchang) { %>
-          <%# <div class="panchang-container">
+        <% if (false && vedicAstrology.panchang) { %>
+          <div class="panchang-container">
             <div class="vedic-section-title">Today's Panchang</div>
             <div class="panchang-grid">
               <div class="panchang-item">
@@ -84,8 +84,8 @@
                 <span class="panchang-value"><%= vedicAstrology.panchang.yoga %></span>
               </div>
             </div>
-          </div> %>
-        <%# } %>
+          </div>
+        <% } %>
 
         <!-- Current Dasha -->
         <% if (vedicAstrology.dasha) { %>
@@ -99,8 +99,8 @@
         <% } %>
 
         <!-- Muhurta Times - TEMPORARILY HIDDEN -->
-        <%# if (vedicAstrology.panchang) { %>
-          <%# <div class="muhurta-container">
+        <% if (false && vedicAstrology.panchang) { %>
+          <div class="muhurta-container">
             <div class="vedic-section-title">Avoid (Muhurta)</div>
             <div class="muhurta-grid">
               <div class="muhurta-item">
@@ -112,8 +112,8 @@
                 <span class="muhurta-value"><%= vedicAstrology.panchang.yamaghanda %></span>
               </div>
             </div>
-          </div> %>
-        <%# } %>
+          </div>
+        <% } %>
 
         <!-- Daily Prediction -->
         <% if (vedicAstrology.prediction && vedicAstrology.prediction.text) { %>
