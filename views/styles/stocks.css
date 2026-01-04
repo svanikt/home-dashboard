@@ -27,7 +27,7 @@ body.stocks-layout {
 /* Main Grid - Three Column Layout */
 .main-grid {
   display: grid;
-  grid-template-columns: auto 1fr 1fr; /* Chart (auto), Panchang (flex), Stocks (flex) */
+  grid-template-columns: minmax(200px, 400px) 1fr 1fr; /* Chart (constrained), Vedic data (flex), Stocks (flex) */
   gap: 0;
   flex: 1;
   overflow: hidden;

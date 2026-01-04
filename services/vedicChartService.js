@@ -117,8 +117,8 @@ class VedicChartService {
         planetCount: planets.length
       });
 
-      // Generate SVG - larger size for better readability
-      const svg = generateNorthIndianChartSVG(chartData, { width: 1200, height: 1200 });
+      // Generate SVG - optimized size for e-ink display
+      const svg = generateNorthIndianChartSVG(chartData, { width: 800, height: 800 });
 
       logger.info?.('[VedicChartService] Chart generated successfully');
       return svg;
