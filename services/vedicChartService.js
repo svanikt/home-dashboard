@@ -118,7 +118,7 @@ class VedicChartService {
       });
 
       // Generate SVG - larger size for better readability
-      const svg = generateNorthIndianChartSVG(chartData, { width: 700, height: 700 });
+      const svg = generateNorthIndianChartSVG(chartData, { width: 1200, height: 1200 });
 
       logger.info?.('[VedicChartService] Chart generated successfully');
       return svg;
