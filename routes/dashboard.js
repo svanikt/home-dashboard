@@ -100,19 +100,31 @@ router.get('/dashboard/:dashboardId/image', validateDashboard, async (req, res) 
       ? `${baseUrl}/dashboard/${req.params.dashboardId}?battery=${encodeURIComponent(batteryParam)}`
       : `${baseUrl}/dashboard/${req.params.dashboardId}`;
 
-    // Check for system Chrome/Chromium on different platforms
-    const chromePaths = [
-      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', // macOS
-      '/usr/bin/chromium-browser', // Ubuntu/Debian
-      '/usr/bin/chromium', // Some Linux distros
-      '/usr/bin/google-chrome', // Google Chrome on Linux
-    ];
-
+    // Prefer Puppeteer's bundled browser (avoids snap Chromium issues on Ubuntu)
+    // Falls back to system Chrome/Chromium if bundled browser not installed
     let executablePath;
-    for (const path of chromePaths) {
-      if (fs.existsSync(path)) {
-        executablePath = path;
-        break;
+    try {
+      // puppeteer.executablePath() returns the bundled browser path
+      const bundled = puppeteer.executablePath();
+      if (fs.existsSync(bundled)) {
+        executablePath = bundled;
+      }
+    } catch (e) {
+      // No bundled browser, fall back to system
+    }
+
+    if (!executablePath) {
+      const chromePaths = [
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', // macOS
+        '/usr/bin/google-chrome', // Google Chrome on Linux
+        '/usr/bin/chromium', // Some Linux distros
+        '/usr/bin/chromium-browser', // Ubuntu/Debian (may be snap wrapper)
+      ];
+      for (const p of chromePaths) {
+        if (fs.existsSync(p)) {
+          executablePath = p;
+          break;
+        }
       }
     }
 
